@@ -1,12 +1,23 @@
 [package]
-name = "bench"
+name = "sled-db-entry-storage"
 version = "0.1.0"
 authors = ["SlackMagiC <laurent.pietrzyk@gmail.com>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[lib]
+name = "sled_db_entry_storage"
+
+
 [dependencies]
-##DOMAIN
+## Domain
 domain = { path = "../../domain" }
-csv-entry-storage = { path = "../../storage/csv-entry-storage" }
+
+## Sled DB
+sled = "0.34.4"
+
+##SERIALIZATION TO JSON
+serde = "1.0"
+serde_derive = "1.0"
+serde_cbor = "^0.11.1"

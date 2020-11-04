@@ -1,12 +1,25 @@
 [package]
-name = "bench"
+name = "csv-entry-storage"
 version = "0.1.0"
 authors = ["SlackMagiC <laurent.pietrzyk@gmail.com>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[lib]
+name = "csv_entry_storage"
+
+
 [dependencies]
-##DOMAIN
+## Error management
+thiserror = "1.0"
+
+## Domain
 domain = { path = "../../domain" }
-csv-entry-storage = { path = "../../storage/csv-entry-storage" }
+
+## CSV management
+csv = "1.1.4"
+
+##SERIALIZATION TO JSON
+serde = { version = "1", features = ["derive"] }
+serde_derive = "1.0"

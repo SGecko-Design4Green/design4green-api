@@ -2,9 +2,11 @@
 members = [
     "bin/bench",
     "bin/rest-api",
+    "storage/csv-entry-storage",
+    "storage/sled-db-entry-storage",
     "domain"
         ]
 
 ##DEFAULT RUNNING BIN
-default-members=["bin/rest-api"]
-##default-members=["bin/bench"]
+##default-members=["bin/rest-api"]
+default-members=["bin/bench"]

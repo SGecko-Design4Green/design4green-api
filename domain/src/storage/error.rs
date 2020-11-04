@@ -9,6 +9,11 @@ pub enum StorageError {
     CreationImpossible,
     #[error("Another error")]
     AnotherError,
+    #[error("IO error: {source}")]
+    Io {
+        #[from]
+        source: std::io::Error,
+    },
 }
 
 //Define a generic error type to simplify return.
