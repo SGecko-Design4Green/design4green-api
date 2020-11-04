@@ -1,8 +1,31 @@
-use domain::core::entry::AdministrativeCompetencies;
+use domain::core::entry::*;
 
 impl EntryCSV {
-    pub fn to_entry(&self) -> () {
-        //TODO: CONVERT TO ENTRY
+    pub fn to_entry(&self) -> Entry {
+        Entry::new(
+            information_access: Some(InformationAccess::new(
+                None, // ?)?
+                Some(self.global_acces_region),
+                Some(self.global_acces_departement),
+                None, // ?)?
+                Some(self.part_des_familles_monoparentales),
+                Some(self.part_des_menages_personne),
+                Some(self.service_publics),
+                None, // ?)?
+            )),
+            numeric_interfaces_access: Some(NumericInterfacesAccess::new(
+                None, // ?)?
+                self.acces_aux_interfaces_numeriques_region,
+                self.acces_aux_interfaces_numeriques_departement,
+                None, // ?)?
+                high_speed_internet_access_percent: Option<f64>,
+                mobile_network_availability_percent: Option<f64>,
+                percent_of_poor_people: Option<f64>,
+                available_median_salary: Option<f64>)
+            ),
+            administrative_competencies: Option<AdministrativeCompetencies>,
+            numeric_competencies: Option<NumericCompetencies>,
+        )
     }
 }
 

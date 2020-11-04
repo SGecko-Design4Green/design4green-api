@@ -1,6 +1,9 @@
+//pub mod actix_middle;
+//pub mod cache_static;
 pub mod configuration;
 pub mod controller;
 pub mod state;
+
 use crate::configuration::Configuration;
 use crate::controller::*;
 use crate::state::AppState;
@@ -38,6 +41,11 @@ async fn main() -> io::Result<()> {
                 web::scope("/api")
                     .route("/_", web::get().to(healthcheck))
                     .route("/index", web::get().to(entries_get_all)),
+            )
+            //STATIC CONF
+            .wrap(
+                middleware::DefaultHeaders::new()
+                    .header("Cache-Control", "public, max-age=604800, immutable"),
             )
             .service(web::scope("/").configure(get_static_files_configuration))
     })
