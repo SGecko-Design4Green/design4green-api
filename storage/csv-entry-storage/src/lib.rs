@@ -62,9 +62,7 @@ impl CSVEntryStorage {
         for result in rdr.deserialize() {
             // Notice that we need to provide a type hint for automatic
             // deserialization.
-            println!(">>>>");
             let record: EntryCSV = result?;
-            println!("DONE");
             //println!("{:#?}", record);
         }
         println!("DONE");

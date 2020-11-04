@@ -13,11 +13,11 @@ fn main() {
         "D:\\DEV\\GIT_PROJECTS\\design4green-api\\resources\\full.csv".to_string(),
     );
 
+    storage.get();
+
     println!(
         "Duration : {} seconds and {} nanoseconds",
         now.elapsed().as_secs(),
         now.elapsed().subsec_nanos()
     );
-
-    storage.get();
 }
