@@ -1,9 +1,9 @@
-[package]
-name = "design4green-api"
-version = "0.1.0"
-authors = ["SlackMagiC <laurent.pietrzyk@gmail.com>"]
-edition = "2018"
+[workspace]
+members = [
+    "bin/rest-api",
+    "bin/rest-api",
+    "domain"
+        ]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[dependencies]
+##DEFAULT RUNNING BIN
+default-members=["bin/rest-api"]
