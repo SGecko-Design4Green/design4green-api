@@ -1,9 +1,10 @@
 [workspace]
 members = [
-    "bin/rest-api",
+    "bin/bench",
     "bin/rest-api",
     "domain"
         ]
 
 ##DEFAULT RUNNING BIN
 default-members=["bin/rest-api"]
+##default-members=["bin/bench"]
