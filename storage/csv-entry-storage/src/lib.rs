@@ -65,7 +65,7 @@ impl CSVEntryStorage {
             println!(">>>>");
             let record: EntryCSV = result?;
             println!("DONE");
-            println!("{:#?}", record);
+            //println!("{:#?}", record);
         }
         println!("DONE");
         Err(CSVEntryStorageError::AnotherError)
