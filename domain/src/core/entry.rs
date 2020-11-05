@@ -155,3 +155,27 @@ impl NumericCompetencies {
         }
     }
 }
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct GeoLoc {
+    pub lat: f64,
+    pub long: f64,
+}
+
+impl GeoLoc {
+    pub fn new(lat: f64, long: f64) -> GeoLoc {
+        GeoLoc { lat, long }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct Iris {
+    pub code: Option<String>,
+    pub geo_loc: Option<GeoLoc>,
+}
+
+impl Iris {
+    pub fn new(code: Option<String>, geo_loc: Option<GeoLoc>) -> Iris {
+        Iris { code, geo_loc }
+    }
+}
