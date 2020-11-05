@@ -12,14 +12,13 @@
   - Towns (NUM + NOMs)
 - [x] National statistics (JB)
 - [x] Insert into SLED (Laurent) => Check get all
-- [_] Full text search.
+- [_] Full text search (Laurent).
 - [x] Create Index for JSON (loading at start)
 - [x] Create Index for Code (IRIS) Insee / CP
 - [_] Geoloc neighbour (TOP 5 / KM)
 - [x] Memory index
 - [x] Github Workflow
 - [_] Cache
-- [_] Generify Mem-index-storage Vec<String> -> Vec<T>
 
 Si Region (Hauts de France) => Resultats Regions + Resultats Départements Regions
 Si Departement (59- Nord) => Resultats Departements de la Region + Resultats Villes départements

@@ -20,6 +20,16 @@ impl MemoryIndexStorage {
 }
 
 impl IndexStorageTrait for MemoryIndexStorage {
+    fn search_on_key(&self, query: String) -> StorageResult<Vec<String>> {
+        let mut results = Vec::new();
+        for (key, _) in self.index.iter() {
+            if key.contains(&query) {
+                results.push(key.to_string());
+            }
+        }
+        Ok(results)
+    }
+
     fn get_index(&self, value: String) -> StorageResult<Option<Vec<String>>> {
         match self.index.get(&value) {
             Some(results) => Ok(Some(results.to_vec())),

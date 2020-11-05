@@ -34,11 +34,11 @@ impl EntryDomainTrait for EntryDomain {
         Ok(self.idx_departments.get_all_keys().unwrap())
     }
 
-    fn search_regions(&self, query: String) -> EntryDomainResult<Vec<String>> {
-        //self.idx_departments.
-        Err(EntryDomainError::NotImplemented)
-    }
-    fn search_departments(&self, query: String) -> EntryDomainResult<Vec<String>> {
+    fn search_cities(&self, department: String, query: String) -> EntryDomainResult<Vec<String>> {
+        //1. Get cities by departemt
+
+        //2. Search on index by zipcode or name
+
         Err(EntryDomainError::NotImplemented)
     }
 }
