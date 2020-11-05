@@ -40,3 +40,13 @@ pub fn get_departments(wrap_state: Data<Arc<Mutex<AppState>>>, _req: HttpRequest
         Err(_) => HttpResponse::InternalServerError().body("Error with backend."),
     }
 }
+
+pub fn get_national_index(wrap_state: Data<Arc<Mutex<AppState>>>, _req: HttpRequest) -> HttpResponse {
+    let state = wrap_state.lock().unwrap();
+    let domain = state.get_domain();
+
+    match domain.get_national_index() {
+        Ok(entry) => HttpResponse::Ok().json(entry),
+        Err(_) => HttpResponse::InternalServerError().body("Error with backend."),
+    }
+}

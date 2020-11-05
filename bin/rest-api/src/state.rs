@@ -2,6 +2,7 @@ use crate::configuration::Configuration;
 use domain::business::domain::EntryDomain;
 use domain::business::traits::EntryDomainTrait;
 use memory_index_storage::MemoryIndexStorage;
+use sled_db_entry_storage::SledEntriesStorage;
 use std::boxed::Box;
 
 pub struct AppState {
@@ -14,7 +15,8 @@ impl AppState {
         AppState {
             entry_domain: Box::new(EntryDomain::new(
                 Box::new(MemoryIndexStorage::new(Configuration::get_index_path() + "idx_regions.json").unwrap()),
-                Box::new(MemoryIndexStorage::new(Configuration::get_index_path() + "idx_departments.json").unwrap())
+                Box::new(MemoryIndexStorage::new(Configuration::get_index_path() + "idx_departments.json").unwrap()),
+                    Box::new(SledEntriesStorage::new(Configuration::get_sled_db_path()))
             )),
         }
     }
