@@ -1,4 +1,4 @@
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Entry {
     pub global: Option<f64>,
     pub global_region: Option<f64>,
@@ -37,7 +37,7 @@ impl Entry {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct InformationAccess {
     pub global: Option<f64>,
     pub global_region: Option<f64>,
@@ -73,7 +73,7 @@ impl InformationAccess {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct NumericInterfacesAccess {
     pub global: Option<f64>,
     pub global_region: Option<f64>,
@@ -109,7 +109,7 @@ impl NumericInterfacesAccess {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct AdministrativeCompetencies {
     pub global: Option<f64>,
     pub global_region: Option<f64>,
@@ -140,7 +140,7 @@ impl AdministrativeCompetencies {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct NumericCompetencies {
     pub global: Option<f64>,
     pub global_region: Option<f64>,

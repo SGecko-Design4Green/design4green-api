@@ -10,7 +10,7 @@ impl EntryCSV {
         }
     }
 
-    pub fn to_entry(&self, nationalStats: AvgStat, regionsStats: BTreeMap<String, AvgStat>, departmentsStats: BTreeMap<String, AvgStat>) -> Entry {
+    pub fn to_entry(&self, nationalStats: &AvgStat, regionsStats: &BTreeMap<String, AvgStat>, departmentsStats: &BTreeMap<String, AvgStat>) -> Entry {
         let regionStat = regionsStats
             .get(&self.nom_reg)
             .unwrap();

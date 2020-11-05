@@ -119,9 +119,9 @@ impl CSVEntryStorage {
         let mut regionsStats: BTreeMap<String, AvgStat> = BTreeMap::new();
         for region in self.get_regions() {
             regionsStats
-                .insert(region,
+                .insert(region.to_string(),
                         self.get_stats(self.get_csv_entries()
-                            .iter().filter_map(|entry_csv| match entry_csv.nom_reg == region {
+                            .iter().filter_map(|entry_csv| match &entry_csv.nom_reg == &region {
                             true => Some(entry_csv.clone()),
                             false => None
                         }).collect()));
@@ -130,11 +130,11 @@ impl CSVEntryStorage {
         let mut departmentsStats: BTreeMap<String, AvgStat> = BTreeMap::new();
         for department in self.get_departments() {
             departmentsStats
-                .insert(department,
+                .insert(department.to_string(),
                 self.get_stats(self.get_csv_entries()
                     .iter()
                         .filter_map(|csv_entry|
-                            match department == self.concat_name(csv_entry.dep.to_owned(), csv_entry.nom_dep.to_owned()) {
+                            match &department == &self.concat_name(csv_entry.dep.to_owned(), csv_entry.nom_dep.to_owned()) {
                                 true => Some(csv_entry.clone()),
                                 false => None
                             }).collect()));
@@ -142,7 +142,7 @@ impl CSVEntryStorage {
 
         self.get_csv_entries()
             .iter()
-            .map(|csv_entry| csv_entry.to_entry(nationalStats, regionsStats, departmentsStats))
+            .map(|csv_entry| csv_entry.to_entry(&nationalStats, &regionsStats, &departmentsStats))
             .collect()
     }
 

@@ -81,8 +81,9 @@ fn main() -> ImportResult<()> {
 
     let db: Box<dyn EntryStorageTrait> = Box::new(SledEntriesStorage::new("database".to_string()));
 
-    for entry_csv in &storage.entries.unwrap() {
-        db.create(entry_csv.code_iris.to_owned(), entry_csv.to_entry());
+    for entry_csv in &storage.get_entries() {
+        let iris_code = entry_csv.iris_code.as_ref().unwrap();
+        db.create(iris_code.to_string(), entry_csv.clone());
     }
 
     let all_db_entries = db.get_all().unwrap();
