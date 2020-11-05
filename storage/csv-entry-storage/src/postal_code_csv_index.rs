@@ -23,4 +23,11 @@ impl PostalCodeIrisCodeCSV {
             )),
         )
     }
+
+    pub fn get_code(&self) -> String {
+        match self.postal_code.trim().is_empty() {
+            true => self.iris_code.chars().take(2).collect(),
+            false => self.postal_code.clone()
+        }
+    }
 }

@@ -216,11 +216,13 @@ impl PostalCodeCsvStorage {
             let postal_code: &PostalCodeIrisCodeCSV = postal_code;
             let data = postal_code.to_postal_code();
 
+            let key = self.concat_name(
+                postal_code.get_code(),
+                postal_code.nom_com.to_owned(),
+            );
+
             results.insert(
-                self.concat_name(
-                    postal_code.postal_code.to_owned(),
-                    postal_code.nom_com.to_owned(),
-                ),
+                key,
                 data,
             );
         }
