@@ -8,6 +8,7 @@ use crate::configuration::Configuration;
 use crate::controller::*;
 use crate::state::AppState;
 use actix_files as fs;
+use actix_web::http::header;
 use actix_web::{middleware, web, web::Data, App, HttpServer};
 use std::sync::{Arc, Mutex};
 use std::{env, io};
@@ -31,9 +32,17 @@ async fn main() -> io::Result<()> {
     //Define a global state for all the Actix-Worker
     let app_state = Arc::new(Mutex::new(AppState::new()));
 
+    // let cors = Cors::new().supports_credentials();
+
     //Start server
     HttpServer::new(move || {
         App::new()
+            .wrap(
+                middleware::DefaultHeaders::new()
+                    .header("Access-Control-Allow-Origin", "*")
+                    .header("Access-Control-Allow-Methods", "*")
+                    .header("Access-Control-Allow-Headers", "*"),
+            )
             .wrap(middleware::Logger::default())
             .wrap(middleware::Compress::default())
             .data(app_state.clone())
