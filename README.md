@@ -16,3 +16,4 @@
 - [_] Create Index for Code (IRIS) Insee / CP
 - [_] Full text search.
 - [_] Geoloc neighbour (TOP 5 / KM)
+- [x] Memory index
