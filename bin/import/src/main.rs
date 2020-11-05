@@ -71,14 +71,12 @@ fn main() -> ImportResult<()> {
     
     //CREATE INDEX FOR NATIONAL ENTRIES
 
-
     println!(
         "Duration : {} seconds and {} nanoseconds",
         now.elapsed().as_secs(),
         now.elapsed().subsec_nanos()
     );
-    */
-
+*/
     let now = Instant::now();
 
     let db: Box<dyn EntryStorageTrait> = Box::new(SledEntriesStorage::new("database".to_string()));

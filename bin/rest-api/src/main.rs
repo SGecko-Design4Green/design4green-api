@@ -1,5 +1,3 @@
-//pub mod actix_middle;
-//pub mod cache_static;
 pub mod configuration;
 pub mod controller;
 pub mod state;
