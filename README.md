@@ -17,3 +17,4 @@
 - [_] Full text search.
 - [_] Geoloc neighbour (TOP 5 / KM)
 - [x] Memory index
+- [x] Github Workflow
