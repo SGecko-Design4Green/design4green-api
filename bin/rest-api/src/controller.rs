@@ -35,7 +35,7 @@ pub fn get_departments(wrap_state: Data<Arc<Mutex<AppState>>>, _req: HttpRequest
     let state = wrap_state.lock().unwrap();
     let domain = state.get_domain();
 
-    match domain.get_regions() {
+    match domain.get_departments() {
         Ok(entries) => HttpResponse::Ok().json(entries),
         Err(_) => HttpResponse::InternalServerError().body("Error with backend."),
     }

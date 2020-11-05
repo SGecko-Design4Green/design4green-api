@@ -29,4 +29,8 @@ impl EntryDomainTrait for EntryDomain {
     fn get_regions(&self) -> EntryDomainResult<Vec<String>> {
         Ok(self.idx_regions.get_all_keys().unwrap())
     }
+
+    fn get_departments(&self) -> EntryDomainResult<Vec<String>> {
+        Ok(self.idx_departments.get_all_keys().unwrap())
+    }
 }
