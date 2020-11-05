@@ -4,13 +4,13 @@ use crate::core::entry::{
     AdministrativeCompetencies, Entry, InformationAccess, NumericCompetencies,
     NumericInterfacesAccess,
 };
-use crate::storage::traits::{EntryStorageTrait, IndexStorageTrait};
+use crate::storage::traits::{EntryStorageTrait, IndexStoragePostalTrait, IndexStorageTrait};
 use std::boxed::Box;
 
 pub struct EntryDomain {
     pub idx_regions: Box<dyn IndexStorageTrait>,
     pub idx_departments: Box<dyn IndexStorageTrait>,
-    pub idx_cities: Box<dyn IndexStorageTrait>,
+    pub idx_cities: Box<dyn IndexStoragePostalTrait>,
     pub idx_insee_coms: Box<dyn IndexStorageTrait>,
     pub entry_datastore: Box<dyn EntryStorageTrait>,
 }
@@ -19,7 +19,7 @@ impl EntryDomain {
     pub fn new(
         idx_regions: Box<dyn IndexStorageTrait>,
         idx_departments: Box<dyn IndexStorageTrait>,
-        idx_cities: Box<dyn IndexStorageTrait>,
+        idx_cities: Box<dyn IndexStoragePostalTrait>,
         idx_insee_coms: Box<dyn IndexStorageTrait>,
         entry_datastore: Box<dyn EntryStorageTrait>,
     ) -> Self {
@@ -47,7 +47,8 @@ impl EntryDomainTrait for EntryDomain {
     }
 
     fn search_cities(&self, department: String, query: String) -> EntryDomainResult<Vec<String>> {
-        self.idx_departments
+        //  BY REGION AND QUERY
+        self.idx_cities
             .search_on_key(query, Some(department))
             .unwrap();
 

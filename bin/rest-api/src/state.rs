@@ -1,6 +1,7 @@
 use crate::configuration::Configuration;
 use domain::business::domain::EntryDomain;
 use domain::business::traits::EntryDomainTrait;
+use memory_index_storage::extended::MemoryIndexStoragePostal;
 use memory_index_storage::MemoryIndexStorage;
 use sled_db_entry_storage::SledEntriesStorage;
 use std::boxed::Box;
@@ -24,8 +25,10 @@ impl AppState {
                     .unwrap(),
                 ),
                 Box::new(
-                    MemoryIndexStorage::new(Configuration::get_index_path() + "idx_postal.json")
-                        .unwrap(),
+                    MemoryIndexStoragePostal::new(
+                        Configuration::get_index_path() + "idx_postal.json",
+                    )
+                    .unwrap(),
                 ),
                 Box::new(
                     MemoryIndexStorage::new(
