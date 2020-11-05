@@ -39,6 +39,7 @@ pub struct CSVEntryStorage {
     pub entries: Option<Vec<EntryCSV>>,
 }
 
+#[derive(Copy, Clone)]
 pub struct AvgStat {
     avg_entries_global_score: f32,
     avg_entries_numeric_competencies: f32,
@@ -120,15 +121,23 @@ impl CSVEntryStorage {
             regionsStats
                 .insert(region,
                         self.get_stats(self.get_csv_entries()
-                            .iter().filter(|entry_csv| entry_csv.nom_reg == region).collect()))
+                            .iter().filter_map(|entry_csv| match entry_csv.nom_reg == region {
+                            true => Some(entry_csv.clone()),
+                            false => None
+                        }).collect()));
         }
 
         let mut departmentsStats: BTreeMap<String, AvgStat> = BTreeMap::new();
         for department in self.get_departments() {
             departmentsStats
                 .insert(department,
-                        self.get_stats(self.get_csv_entries()
-                            .iter().filter(|entry_csv| department == self.concat_name(csv_entry.dep.to_owned(), csv_entry.nom_dep.to_owned())).collect()))
+                self.get_stats(self.get_csv_entries()
+                    .iter()
+                        .filter_map(|csv_entry|
+                            match department == self.concat_name(csv_entry.dep.to_owned(), csv_entry.nom_dep.to_owned()) {
+                                true => Some(csv_entry.clone()),
+                                false => None
+                            }).collect()));
         }
 
         self.get_csv_entries()
