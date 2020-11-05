@@ -1,6 +1,6 @@
 [workspace]
 members = [
-    "bin/bench",
+    "bin/import",
     "bin/rest-api",
     "storage/csv-entry-storage",
     "storage/memory-index-storage",
@@ -10,4 +10,4 @@ members = [
 
 ##DEFAULT RUNNING BIN
 ##default-members=["bin/rest-api"]
-default-members=["bin/bench"]
+default-members=["bin/import"]

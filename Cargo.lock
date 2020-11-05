@@ -393,14 +393,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "904dfeac50f3cdaba28fc6f57fdcddb75f49ed61346676a78c4ffe55877802fd"
 
 [[package]]
-name = "bench"
-version = "0.1.0"
-dependencies = [
- "csv-entry-storage",
- "domain",
-]
-
-[[package]]
 name = "bitflags"
 version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1023,6 +1015,18 @@ dependencies = [
  "matches",
  "unicode-bidi",
  "unicode-normalization",
+]
+
+[[package]]
+name = "import"
+version = "0.1.0"
+dependencies = [
+ "csv-entry-storage",
+ "domain",
+ "json",
+ "serde",
+ "serde_derive",
+ "serde_json",
 ]
 
 [[package]]
