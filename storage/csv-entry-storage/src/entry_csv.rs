@@ -3,9 +3,9 @@ use domain::core::entry::*;
 impl EntryCSV {
     pub fn to_entry(&self) -> Entry {
         let information_access = InformationAccess::new(
-            None, // ?)?
-            self.clean_and_parse_f64(&self.global_acces_region),
-            self.clean_and_parse_f64(&self.global_acces_departement),
+            self.clean_and_parse_f64(&self.global_acces_region_1),
+            None,
+            None,
             None, // ?)?
             self.clean_and_parse_f64(&self.part_des_familles_monoparentales),
             self.clean_and_parse_f64(&self.part_des_menages_personne),
@@ -14,24 +14,56 @@ impl EntryCSV {
         );
 
         let numeric_interfaces_access = NumericInterfacesAccess::new(
-            None, // ?)?
-            self.clean_and_parse_f64(&self.acces_aux_interfaces_numeriques_region),
-            self.clean_and_parse_f64(&self.acces_aux_interfaces_numeriques_departement),
+            self.clean_and_parse_f64(&self.acces_aux_interfaces_numeriques_region_1),
             None, // ?)?
             None,
+            None, // ?)?
+            match &self.taux_couv_hd_thd_1 {
+                Some(taux) => self.clean_and_parse_f64(taux),
+                None => None
+            },
+            match &self.taux_couv_mobile {
+                Some(taux) => self.clean_and_parse_f64(taux),
+                None => None
+            },
+            match &self.taux_pauvrete {
+                Some(taux) => self.clean_and_parse_f64(taux),
+                None => None
+            },
+            self.clean_and_parse_f64(&self.cm_revenue_median_region),
+        );
+
+        let administrative_competencies = AdministrativeCompetencies::new(
+            self.clean_and_parse_f64(&self.competences_administatives_region_1),
             None,
             None,
-            //TODO: CHECK IF OK
-            self.clean_and_parse_f64(&self.cm_revenue_median_epci),
+            None,
+            match &self.part_chomeurs {
+                Some(part) => self.clean_and_parse_f32(part),
+                None => None
+            },
+            self.clean_and_parse_f32(&self.part_des_personnes_agees_de_15_29_ans),
+        );
+
+        let numeric_competencies = NumericCompetencies::new(
+            self.clean_and_parse_f64(&self.competences_numeriques_scolaires_region_1),
+            None,
+            None,
+            None,
+            self.clean_and_parse_f32(&self.part_des_personnes_agees_de_65_ans_plus),
+            self.clean_and_parse_f32(&self.part_des_non_peu_diplomes_population_non_scolarisee_15_ans_plus),
         );
 
         Entry::new(
+            self.clean_and_parse_f64(&self.score_global_region_star),
+            None,
+            None,
+            None,
+            Some(self.iris.to_owned()),
             Some(information_access),
             Some(numeric_interfaces_access),
-            //TODO:
-            None,
-            //TODO:
-            None,
+            Some(administrative_competencies),
+            Some(numeric_competencies),
         )
     }
     fn clean_and_parse_f64(&self, value: &String) -> Option<f64> {
@@ -40,6 +72,15 @@ impl EntryCSV {
             false => {
                 let cleaned_string = str::replace(&value, ",", ".");
                 Some(cleaned_string.parse::<f64>().unwrap())
+            }
+        }
+    }
+    fn clean_and_parse_f32(&self, value: &String) -> Option<f32> {
+        match value.trim().is_empty() {
+            true => return None,
+            false => {
+                let cleaned_string = str::replace(&value, ",", ".");
+                Some(cleaned_string.parse::<f32>().unwrap())
             }
         }
     }
@@ -96,7 +137,7 @@ pub struct EntryCSV {
     #[serde(rename(deserialize = "Nom Reg"))]
     pub nom_reg: String,
     #[serde(rename(deserialize = "Part des chômeurs (15 – 64 ans)"))]
-    pat_chomeurs: Option<String>,
+    part_chomeurs: Option<String>,
     #[serde(rename(deserialize = "REG"))]
     reg: String,
     #[serde(rename(deserialize = "Services publics / individu"))]
@@ -292,7 +333,7 @@ pub struct EntryCSV {
     #[serde(rename(deserialize = "Part des ménages d'une personne"))]
     part_des_menages_personne: String,
     #[serde(rename(
-        deserialize = "Part des non ou peu diplômés dans la population non scolarisée de 15 ans ou plus"
+    deserialize = "Part des non ou peu diplômés dans la population non scolarisée de 15 ans ou plus"
     ))]
     part_des_non_peu_diplomes_population_non_scolarisee_15_ans_plus: String,
     #[serde(rename(deserialize = "Part des personnes âgées de 15 – 29 ans"))]

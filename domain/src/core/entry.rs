@@ -1,5 +1,10 @@
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Entry {
+    pub global: Option<f64>,
+    pub global_region: Option<f64>,
+    pub global_dept: Option<f64>,
+    pub global_national: Option<f64>,
+    pub iris_code: Option<String>,
     pub information_access: Option<InformationAccess>,
     pub numeric_interfaces_access: Option<NumericInterfacesAccess>,
     pub administrative_competencies: Option<AdministrativeCompetencies>,
@@ -8,12 +13,22 @@ pub struct Entry {
 
 impl Entry {
     pub fn new(
+        global: Option<f64>,
+        global_region: Option<f64>,
+        global_dept: Option<f64>,
+        global_national: Option<f64>,
+        iris_code: Option<String>,
         information_access: Option<InformationAccess>,
         numeric_interfaces_access: Option<NumericInterfacesAccess>,
         administrative_competencies: Option<AdministrativeCompetencies>,
         numeric_competencies: Option<NumericCompetencies>,
     ) -> Self {
         Entry {
+            global,
+            global_region,
+            global_dept,
+            global_national,
+            iris_code,
             information_access,
             numeric_interfaces_access,
             administrative_competencies,
