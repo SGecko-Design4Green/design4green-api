@@ -87,6 +87,38 @@ impl CSVEntryStorage {
         std::collections::HashSet::from_iter(all_dep)
     }
 
+    pub fn get_insee_coms(&self) -> HashSet<String> {
+        let all_insee_com: Vec<String> = self
+            .get_csv_entries()
+            .iter()
+            .map(|csv_entry| csv_entry.insee_com.to_owned())
+            .collect();
+
+        std::collections::HashSet::from_iter(all_insee_com)
+    }
+
+    pub fn get_insee_com_with_iris(&self) -> BTreeMap<String, Vec<String>> {
+        let mut results: BTreeMap<String, Vec<String>> = BTreeMap::new();
+        let insee_coms = self.get_insee_coms();
+
+        for insee_com in insee_coms {
+            results.insert(
+                insee_com.clone(),
+                self.get_csv_entries()
+                    .iter()
+                    .filter_map(|csv_entry| match &csv_entry.insee_com == &insee_com {
+                        true => Some(csv_entry.code_iris.clone()),
+                        false => None,
+                    })
+                    .collect(),
+            );
+        }
+
+        //Remove unasigned items
+        results.remove_entry(&"".to_string());
+        results
+    }
+
     pub fn get_regions(&self) -> HashSet<String> {
         let all_reg: Vec<String> = self
             .get_csv_entries()

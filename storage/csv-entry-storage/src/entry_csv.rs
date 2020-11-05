@@ -119,7 +119,7 @@ pub struct EntryCSV {
     #[serde(rename(deserialize = "Grd Quart"))]
     grd_quart: String,
     #[serde(rename(deserialize = "Insee Com"))]
-    insee_com: String,
+    pub insee_com: String,
     #[serde(rename(deserialize = "Insee Dep"))]
     insee_dep: String,
     #[serde(rename(deserialize = "Insee Reg"))]

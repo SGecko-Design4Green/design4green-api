@@ -52,6 +52,12 @@ fn main() -> ImportResult<()> {
     let now = Instant::now();
     let mut storage = CSVEntryStorage::new("resources/full.csv".to_string());
     &storage.load();
+
+        //CREATE INDEX FOR INSEE COM
+        let insee_com = &storage.get_insee_com_with_iris();
+        println!("INSEE_COM >> Lines {:?}", insee_com.len());
+        serialize_index_to_file("insee_coms".to_string(), insee_com);
+    
     /*
     //CREATE INDEX FOR REGIONS
     let reg_iris = &storage.get_regions_with_iris();
@@ -62,7 +68,7 @@ fn main() -> ImportResult<()> {
     let dep_iris = &storage.get_departements_with_iris();
     println!("DEP_IRIS >> Lines {:?}", dep_iris.len());
     serialize_index_to_file("departments".to_string(), dep_iris);
-
+    
     //CREATE INDEX FOR NATIONAL ENTRIES
 
 
