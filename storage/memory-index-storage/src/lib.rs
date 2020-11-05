@@ -28,7 +28,7 @@ impl IndexStorageTrait for MemoryIndexStorage {
     }
 
     fn get_all(&self) -> StorageResult<Vec<String>> {
-        //let result: Vec<String> = self.index.into_values().collect();
+        let result: Vec<String> = self.index.into_values().collect();
         Ok(Vec::new())
     }
 }
