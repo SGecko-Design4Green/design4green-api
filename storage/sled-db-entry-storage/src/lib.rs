@@ -41,7 +41,13 @@ impl EntryStorageTrait for SledEntriesStorage {
     fn get_entry(&self, iris_code: String) -> StorageResult<Option<Entry>> {
         let tree = self.get_entries_tree();
         match tree.get(iris_code.to_string()) {
-            Ok(wrap_cbor_entry) => Ok(Some(from_slice(&wrap_cbor_entry.unwrap()).unwrap())),
+            Ok(wrap_cbor_entry) => match wrap_cbor_entry {
+                Some(cbor) => match from_slice(&cbor) {
+                    Ok(deser_value) => Ok(Some(deser_value)),
+                    Err(_) => Err(StorageError::NotImplemented)
+                }
+                None => Err(StorageError::NotImplemented)
+            }
             Err(_) => Err(StorageError::NotImplemented),
         }
     }
