@@ -2,15 +2,19 @@
 extern crate serde_derive;
 
 use domain::core::entry::Entry;
+use domain::core::entry::Iris;
 use domain::storage::error::*;
 use entry_csv::EntryCSV;
+use postal_code_csv_index::PostalCodeIrisCodeCSV;
 use std::fs::File;
 use std::io::prelude::*;
 use std::io::{self, BufReader};
 use std::process;
 use thiserror::Error;
 pub mod entry_csv;
+pub mod postal_code_csv_index;
 use std::collections::HashMap;
+use std::collections::BTreeMap;
 use std::collections::HashSet;
 use std::fs;
 use std::iter::FromIterator;
@@ -145,6 +149,104 @@ impl CSVEntryStorage {
     pub fn get_csv_entries(&self) -> Vec<EntryCSV> {
         match &self.entries {
             Some(entries) => entries.to_vec(),
+            None => Vec::new(),
+        }
+    }
+}
+
+#[derive(Error, Debug)]
+pub enum PostalCodeCsvStorageError {
+    #[error("Another error")]
+    AnotherError,
+    #[error("IO error: {source}")]
+    Io {
+        #[from]
+        source: std::io::Error,
+    },
+    #[error("CSV error: {source}")]
+    CSV {
+        #[from]
+        source: csv::Error,
+    },
+}
+
+pub type PostalCodeCsvStorageResult<T> = std::result::Result<T, PostalCodeCsvStorageError>;
+
+pub struct PostalCodeCsvStorage {
+    pub path: String,
+    pub postal_codes: Option<Vec<PostalCodeIrisCodeCSV>>,
+}
+
+impl PostalCodeCsvStorage {
+    pub fn new(path: String) -> Self {
+        PostalCodeCsvStorage {
+            path: path,
+            postal_codes: None,
+        }
+    }
+
+    pub fn load(&mut self) -> CSVEntryStorageResult<()> {
+        let mut entries = Vec::new();
+
+        let file = fs::read(&self.path).unwrap();
+        let mut rdr = csv::ReaderBuilder::new()
+            .delimiter(b';')
+            .from_reader(&*file);
+
+        for result in rdr.deserialize() {
+            let record: PostalCodeIrisCodeCSV = result?;
+            entries.push(record);
+        }
+
+        self.postal_codes = Some(entries);
+        Ok(())
+    }
+
+    pub fn get_iris_codes(&self) -> HashSet<String> {
+        let iris_codes: Vec<String> = self
+            .get_csv_postal_codes()
+            .iter()
+            .map(|postal_code| postal_code.iris_code.to_owned())
+            .collect();
+
+        std::collections::HashSet::from_iter(iris_codes)
+    }
+
+    pub fn get_postal_codes(&self) -> HashSet<String> {
+        let postal_codes: Vec<String> = self
+            .get_csv_postal_codes()
+            .iter()
+            .map(|postal_code| postal_code.postal_code.to_owned())
+            .collect();
+
+        std::collections::HashSet::from_iter(postal_codes)
+    }
+
+    pub fn get_iris_and_geoloc_with_postal_code(&self) -> BTreeMap<String, Vec<Iris>> {
+        let mut results: BTreeMap<String, Vec<Iris>> = BTreeMap::new();
+        let postal_codes: HashSet<String> = self.get_postal_codes();
+        for postal_code in postal_codes {
+            let irises : Vec<Iris> = self
+            .get_csv_postal_codes()
+            .iter()
+            .filter_map(
+                |csv_postal_code| match &csv_postal_code.postal_code == &postal_code {
+                    true => Some(csv_postal_code.to_postal_code()),
+                    false => None,
+                },
+            )
+            .collect();
+
+            results.insert(postal_code.clone(), irises);
+        }
+
+
+        results
+    }
+
+    pub fn get_csv_postal_codes(&self) -> Vec<PostalCodeIrisCodeCSV> {
+        match &self.postal_codes {
+            Some(postal_codes) => postal_codes.to_vec(),
             None => Vec::new(),
         }
     }
