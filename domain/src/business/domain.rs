@@ -78,4 +78,12 @@ impl EntryDomainTrait for EntryDomain {
             None => Err(EntryDomainError::NotFoundError)
         }
     }
+
+    fn get_district_index(&self, iriscode: String) -> EntryDomainResult<Entry> {
+        match self.entry_datastore.get_district_entry(iriscode).unwrap() {
+            Some(district_entry) => Ok(district_entry),
+            None => Err(EntryDomainError::NotFoundError)
+        }
+    }
+
 }
