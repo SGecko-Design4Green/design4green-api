@@ -41,7 +41,10 @@ pub fn get_departments(wrap_state: Data<Arc<Mutex<AppState>>>, _req: HttpRequest
     }
 }
 
-pub fn get_national_index(wrap_state: Data<Arc<Mutex<AppState>>>, _req: HttpRequest) -> HttpResponse {
+pub fn get_national_index(
+    wrap_state: Data<Arc<Mutex<AppState>>>,
+    _req: HttpRequest,
+) -> HttpResponse {
     let state = wrap_state.lock().unwrap();
     let domain = state.get_domain();
 
@@ -51,17 +54,32 @@ pub fn get_national_index(wrap_state: Data<Arc<Mutex<AppState>>>, _req: HttpRequ
     }
 }
 
-pub fn get_regional_index(wrap_state: Data<Arc<Mutex<AppState>>>, req: HttpRequest) -> HttpResponse {
+pub fn get_regional_index(
+    wrap_state: Data<Arc<Mutex<AppState>>>,
+    req: HttpRequest,
+) -> HttpResponse {
     let state = wrap_state.lock().unwrap();
     let domain = state.get_domain();
 
     match req.match_info().get("region") {
-        Some(region) => {
-            match domain.get_regional_index(region.to_string()) {
-                Ok(entry) => HttpResponse::Ok().json(entry),
-                Err(_) => HttpResponse::InternalServerError().body("Error with backend."),
-            }
-        }
+        Some(region) => match domain.get_regional_index(region.to_string()) {
+            Ok(entry) => HttpResponse::Ok().json(entry),
+            Err(_) => HttpResponse::InternalServerError().body("Error with backend."),
+        },
         None => HttpResponse::BadRequest().body("No region was given."),
+    }
+}
+
+pub fn get_departmental_index(
+    wrap_state: Data<Arc<Mutex<AppState>>>,
+    _req: HttpRequest,
+) -> HttpResponse {
+    let state = wrap_state.lock().unwrap();
+    let domain = state.get_domain();
+
+    let dept: String = "".into();
+    match domain.get_departmental_index(dept) {
+        Ok(entry) => HttpResponse::Ok().json(entry),
+        Err(_) => HttpResponse::InternalServerError().body("Error with backend."),
     }
 }

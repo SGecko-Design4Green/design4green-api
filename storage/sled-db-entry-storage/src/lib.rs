@@ -168,6 +168,64 @@ impl EntryStorageTrait for SledEntriesStorage {
 
     }
 
+    fn get_department_entry(&self, department: String) -> StorageResult<Option<Entry>> {
+        let tree = self.get_entries_tree();
+
+        match tree.first() {
+            Ok(wrap_cbor_entry) => {
+                let entry: Entry = from_slice(&wrap_cbor_entry.unwrap().1).unwrap();
+
+                let national_entry = Entry::new(
+                    entry.global_dept,
+                    None,
+                    None,
+                    None,
+                    None,
+                    Some(InformationAccess::new(
+                        entry.information_access.unwrap().global_dept,
+                        None,
+                        None,
+                        None,
+                        None,
+                        None,
+                        None,
+                        None
+                    )),
+                    Some(NumericInterfacesAccess::new(
+                        entry.numeric_interfaces_access.unwrap().global_dept,
+                        None,
+                        None,
+                        None,
+                        None,
+                        None,
+                        None,
+                        None
+                    )),
+                    Some(AdministrativeCompetencies::new(
+                        entry.administrative_competencies.unwrap().global_dept,
+                        None,
+                        None,
+                        None,
+                        None,
+                        None
+                    )),
+                    Some(NumericCompetencies::new(
+                        entry.numeric_competencies.unwrap().global_dept,
+                        None,
+                        None,
+                        None,
+                        None,
+                        None
+                    ))
+                );
+
+                Ok(Some(national_entry))
+            },
+            Err(_) => Err(StorageError::AnotherError)
+        }
+
+    }
+
     fn create(&self, iris_code: String, entry: Entry) -> StorageResult<()> {
         let tree = self.get_entries_tree();
         match tree.insert(iris_code, to_vec(&entry).unwrap()) {
