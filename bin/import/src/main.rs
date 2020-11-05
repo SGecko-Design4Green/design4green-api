@@ -35,20 +35,19 @@ pub enum ImportError {
 pub type ImportResult<T> = std::result::Result<T, ImportError>;
 
 fn main() -> ImportResult<()> {
-    /*
-        let now = Instant::now();
-        let mut storage = PostalCodeCsvStorage::new("resources/postal.csv".to_string());
-        &storage.load();
+    let now = Instant::now();
+    let mut storage = PostalCodeCsvStorage::new("resources/postal.csv".to_string());
+    &storage.load();
 
-        let iris_codes_postal_codes = &storage.get_iris_and_geoloc_with_postal_code();
-        serialize_index_to_file("postal".to_string(), iris_codes_postal_codes)?;
-        println!("Postal >> Lines {:?}", iris_codes_postal_codes.len());
-        println!(
-            "Duration : {} seconds and {} nanoseconds",
-            now.elapsed().as_secs(),
-            now.elapsed().subsec_nanos()
-        );
-    */
+    let iris_codes_postal_codes = &storage.get_iris_and_geoloc_with_postal_code();
+    serialize_index_to_file("postal".to_string(), iris_codes_postal_codes)?;
+    println!("Postal >> Lines {:?}", iris_codes_postal_codes.len());
+    println!(
+        "Duration : {} seconds and {} nanoseconds",
+        now.elapsed().as_secs(),
+        now.elapsed().subsec_nanos()
+    );
+
     let now = Instant::now();
     let mut storage = CSVEntryStorage::new("resources/full.csv".to_string());
     &storage.load();
@@ -57,26 +56,26 @@ fn main() -> ImportResult<()> {
     let insee_com = &storage.get_insee_com_with_iris();
     println!("INSEE_COM >> Lines {:?}", insee_com.len());
     serialize_index_to_file("insee_coms".to_string(), insee_com);
-    /*
-        //CREATE INDEX FOR REGIONS
-        let reg_iris = &storage.get_regions_with_iris();
-        println!("REG_IRIS >> Lines {:?}", reg_iris.len());
-        serialize_index_to_file("regions".to_string(), reg_iris);
 
-        //CREATE INDEX FOR DEPARTEMENTS
-        let dep_iris = &storage.get_departements_with_iris();
-        println!("DEP_IRIS >> Lines {:?}", dep_iris.len());
-        serialize_index_to_file("departments".to_string(), dep_iris);
+    //CREATE INDEX FOR REGIONS
+    let reg_iris = &storage.get_regions_with_iris();
+    println!("REG_IRIS >> Lines {:?}", reg_iris.len());
+    serialize_index_to_file("regions".to_string(), reg_iris);
 
-        //CREATE INDEX FOR NATIONAL ENTRIES
+    //CREATE INDEX FOR DEPARTEMENTS
+    let dep_iris = &storage.get_departements_with_iris();
+    println!("DEP_IRIS >> Lines {:?}", dep_iris.len());
+    serialize_index_to_file("departments".to_string(), dep_iris);
 
-        println!(
-            "Duration : {} seconds and {} nanoseconds",
-            now.elapsed().as_secs(),
-            now.elapsed().subsec_nanos()
-        );
-    */
-    /*let now = Instant::now();
+    //CREATE INDEX FOR NATIONAL ENTRIES
+
+    println!(
+        "Duration : {} seconds and {} nanoseconds",
+        now.elapsed().as_secs(),
+        now.elapsed().subsec_nanos()
+    );
+
+    let now = Instant::now();
     let db: Box<dyn EntryStorageTrait> = Box::new(SledEntriesStorage::new("database".to_string()));
 
     for entry_csv in &storage.get_entries() {
@@ -94,7 +93,6 @@ fn main() -> ImportResult<()> {
         now.elapsed().as_secs(),
         now.elapsed().subsec_nanos()
     );
-    */
 
     Ok(())
 }

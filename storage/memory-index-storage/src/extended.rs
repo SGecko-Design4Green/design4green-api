@@ -1,27 +1,26 @@
+use domain::core::entry::Iris;
 use domain::storage::error::*;
-use domain::storage::traits::IndexStorageTrait;
+use domain::storage::traits::IndexStoragePostalTrait;
 use std::collections::BTreeMap;
 use std::fs::File;
 use std::io::BufReader;
 use std::ops::Bound::Included;
 
-pub mod extended;
-
-pub struct MemoryIndexStorage {
-    pub index: BTreeMap<String, Vec<String>>,
+pub struct MemoryIndexStoragePostal {
+    pub index: BTreeMap<String, Iris>,
 }
 
-impl MemoryIndexStorage {
+impl MemoryIndexStoragePostal {
     pub fn new(path: String) -> StorageResult<Self> {
         let file = File::open(path)?;
         let reader = BufReader::new(file);
-        let index: BTreeMap<String, Vec<String>> = serde_json::from_reader(reader)?;
+        let index: BTreeMap<String, Iris> = serde_json::from_reader(reader)?;
 
-        Ok(MemoryIndexStorage { index: index })
+        Ok(MemoryIndexStoragePostal { index: index })
     }
 }
 
-impl IndexStorageTrait for MemoryIndexStorage {
+impl IndexStoragePostalTrait for MemoryIndexStoragePostal {
     fn search_on_key(
         &self,
         query: String,
@@ -47,19 +46,17 @@ impl IndexStorageTrait for MemoryIndexStorage {
         Ok(results)
     }
 
-    fn get_index(&self, value: String) -> StorageResult<Option<Vec<String>>> {
+    fn get_index(&self, value: String) -> StorageResult<Option<Iris>> {
         match self.index.get(&value) {
-            Some(results) => Ok(Some(results.to_vec())),
+            Some(results) => Ok(Some(results.clone())),
             None => Ok(None),
         }
     }
 
-    fn get_all_values(&self) -> StorageResult<Vec<String>> {
-        let size = self.index.iter().fold(0, |acc, index| acc + index.1.len());
-
-        let mut result: Vec<String> = Vec::with_capacity(size);
+    fn get_all_values(&self) -> StorageResult<Vec<Iris>> {
+        let mut result: Vec<Iris> = Vec::new();
         for index in self.index.iter() {
-            result.extend_from_slice(&index.1);
+            result.push(index.1.clone())
         }
         Ok(result)
     }
@@ -70,8 +67,4 @@ impl IndexStorageTrait for MemoryIndexStorage {
     }
 }
 
-impl MemoryIndexStorage {
-    pub fn load_index(&self) -> StorageResult<()> {
-        Ok(())
-    }
-}
+impl MemoryIndexStoragePostal {}

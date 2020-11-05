@@ -67,7 +67,6 @@ impl CSVEntryStorage {
             entries.push(record);
         }
         self.entries = Some(entries);
-        
         Ok(())
     }
 
@@ -351,16 +350,16 @@ impl PostalCodeCsvStorage {
         }
     }
 
-    pub fn get_iris_and_geoloc_with_postal_code(&self) -> BTreeMap<String, Iris> {
-        let mut results: BTreeMap<String, Iris> = BTreeMap::new();
+    pub fn get_iris_and_geoloc_with_postal_code(&self) -> BTreeMap<String, Vec<String>> {
+        let mut results: BTreeMap<String, Vec<String>> = BTreeMap::new();
 
         for postal_code in &self.get_csv_postal_codes() {
-            let postal_code: &PostalCodeIrisCodeCSV = postal_code;
-            let data = postal_code.to_postal_code();
-
-            let key = self.concat_name(postal_code.get_code(), postal_code.nom_com.to_owned());
-
-            results.insert(key, data);
+            let mut vec = Vec::new();
+            vec.push(postal_code.get_code());
+            results.insert(
+                self.concat_name(postal_code.get_code(), postal_code.nom_com.to_owned()),
+                vec,
+            );
         }
 
         results

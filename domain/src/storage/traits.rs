@@ -1,4 +1,4 @@
-use crate::core::entry::Entry;
+use crate::core::entry::{Entry, Iris};
 use crate::storage::error::*;
 
 pub trait EntryStorageTrait: Sync + Send {
@@ -19,5 +19,16 @@ pub trait IndexStorageTrait: Sync + Send {
     ) -> StorageResult<Vec<String>>;
     fn get_index(&self, value: String) -> StorageResult<Option<Vec<String>>>;
     fn get_all_values(&self) -> StorageResult<Vec<String>>;
+    fn get_all_keys(&self) -> StorageResult<Vec<String>>;
+}
+
+pub trait IndexStoragePostalTrait: Sync + Send {
+    fn search_on_key(
+        &self,
+        contains: String,
+        start_with: Option<String>,
+    ) -> StorageResult<Vec<String>>;
+    fn get_index(&self, value: String) -> StorageResult<Option<Iris>>;
+    fn get_all_values(&self) -> StorageResult<Vec<Iris>>;
     fn get_all_keys(&self) -> StorageResult<Vec<String>>;
 }
