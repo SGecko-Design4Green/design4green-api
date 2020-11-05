@@ -21,15 +21,22 @@ impl MemoryIndexStorage {
 
 impl IndexStorageTrait for MemoryIndexStorage {
     fn get_index(&self, value: String) -> StorageResult<Option<Vec<String>>> {
-        match &self.index.get(&value) {
+        match self.index.get(&value) {
             Some(results) => Ok(Some(results.to_vec())),
             None => Ok(None),
         }
     }
 
     fn get_all(&self) -> StorageResult<Vec<String>> {
-        let result: Vec<String> = self.index.into_values().collect();
-        Ok(Vec::new())
+        self.index.values();
+        let size = self.index.iter().fold(0, |acc, index| acc + index.1.len());
+
+        let mut result: Vec<String> = Vec::with_capacity(size);
+
+        for index in self.index.iter() {
+            result.extend_from_slice(&index.1);
+        }
+        Ok(result)
     }
 }
 

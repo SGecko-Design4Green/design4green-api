@@ -68,7 +68,7 @@ pub struct EntryCSV {
     #[serde(rename(deserialize = "COM"))]
     com: String,
     #[serde(rename(deserialize = "DEP"))]
-    dep: String,
+    pub dep: String,
     #[serde(rename(deserialize = "Epci"))]
     epci: String,
     #[serde(rename(deserialize = "Geo Point"))]

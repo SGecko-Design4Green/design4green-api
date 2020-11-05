@@ -47,10 +47,8 @@ impl CSVEntryStorage {
             entries: None,
         }
     }
-
     pub fn load(&mut self) -> CSVEntryStorageResult<()> {
         let mut entries = Vec::new();
-
         let file = fs::read(&self.path).unwrap();
         let mut rdr = csv::ReaderBuilder::new()
             .delimiter(b';')
@@ -58,12 +56,14 @@ impl CSVEntryStorage {
 
         for result in rdr.deserialize() {
             let record: EntryCSV = result?;
+            println!("{:#?}", &record);
             entries.push(record);
-            //println!("{:#?}", record);
         }
-
         self.entries = Some(entries);
         Ok(())
+    }
+    fn concat_name(&self, code: String, name: String) -> String {
+        format!("{} - {}", code, name)
     }
 
     pub fn get_entries(&self) -> Vec<Entry> {
@@ -77,7 +77,9 @@ impl CSVEntryStorage {
         let all_dep: Vec<String> = self
             .get_csv_entries()
             .iter()
-            .map(|csv_entry| csv_entry.libdep.to_owned())
+            .map(|csv_entry| {
+                self.concat_name(csv_entry.dep.to_owned(), csv_entry.libdep.to_owned())
+            })
             .collect();
 
         std::collections::HashSet::from_iter(all_dep)
@@ -102,9 +104,14 @@ impl CSVEntryStorage {
                 region.clone(),
                 self.get_csv_entries()
                     .iter()
-                    .filter_map(|csv_entry| match &csv_entry.libreg == &region {
-                        true => Some(csv_entry.code_iris.clone()),
-                        false => None,
+                    .filter_map(|csv_entry| {
+                        match &self
+                            .concat_name(csv_entry.dep.to_owned(), csv_entry.libdep.to_owned())
+                            == &region
+                        {
+                            true => Some(csv_entry.code_iris.clone()),
+                            false => None,
+                        }
                     })
                     .collect(),
             );
