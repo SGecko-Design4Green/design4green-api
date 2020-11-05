@@ -4,6 +4,8 @@ use domain::core::entry::*;
 pub struct PostalCodeIrisCodeCSV {
     #[serde(rename(deserialize = "INSEE_COM"))]
     pub iris_code: String,
+    #[serde(rename(deserialize = "NOM_COM"))]
+    pub nom_com: String,
     #[serde(rename(deserialize = "Code_postal"))]
     pub postal_code: String,
     #[serde(rename(deserialize = "Geo Point"))]

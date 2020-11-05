@@ -28,6 +28,6 @@ Si Quartier (Code iris + quartiers) => Resultats quartiers.
 
 - Index :
   - Regions -> Departement
-  - CodePostal -> CodeInsee
-  - NomVille -> CodeInsee
-  - CodeInsee -> Vec<CodeIris>
+  - CodePostal -> CodeInsee (DONE)
+  - NomVille -> CodeInsee (DONE)
+  - CodeInsee -> Vec<CodeIris> (TODO)

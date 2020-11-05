@@ -90,11 +90,11 @@ pub struct EntryCSV {
     #[serde(rename(deserialize = "Nom Com"))]
     nom_com: String,
     #[serde(rename(deserialize = "Nom Dep"))]
-    nom_dep: String,
+    pub nom_dep: String,
     #[serde(rename(deserialize = "Nom Iris"))]
     nom_iris: String,
     #[serde(rename(deserialize = "Nom Reg"))]
-    nom_reg: String,
+    pub nom_reg: String,
     #[serde(rename(deserialize = "Part des chômeurs (15 – 64 ans)"))]
     pat_chomeurs: Option<String>,
     #[serde(rename(deserialize = "REG"))]

@@ -60,6 +60,7 @@ impl CSVEntryStorage {
         self.entries = Some(entries);
         Ok(())
     }
+
     fn concat_name(&self, code: String, name: String) -> String {
         format!("{} - {}", code, name)
     }
@@ -76,7 +77,7 @@ impl CSVEntryStorage {
             .get_csv_entries()
             .iter()
             .map(|csv_entry| {
-                self.concat_name(csv_entry.dep.to_owned(), csv_entry.libdep.to_owned())
+                self.concat_name(csv_entry.dep.to_owned(), csv_entry.nom_dep.to_owned())
             })
             .collect();
 
@@ -87,7 +88,7 @@ impl CSVEntryStorage {
         let all_reg: Vec<String> = self
             .get_csv_entries()
             .iter()
-            .map(|csv_entry| csv_entry.libreg.to_owned())
+            .map(|csv_entry| csv_entry.nom_reg.to_owned())
             .collect();
 
         std::collections::HashSet::from_iter(all_reg)
@@ -102,7 +103,7 @@ impl CSVEntryStorage {
                 region.clone(),
                 self.get_csv_entries()
                     .iter()
-                    .filter_map(|csv_entry| match &csv_entry.libreg == &region {
+                    .filter_map(|csv_entry| match &csv_entry.nom_reg == &region {
                         true => Some(csv_entry.code_iris.clone()),
                         false => None,
                     })
@@ -123,7 +124,7 @@ impl CSVEntryStorage {
                     .iter()
                     .filter_map(|csv_entry| {
                         match &self
-                            .concat_name(csv_entry.dep.to_owned(), csv_entry.libdep.to_owned())
+                            .concat_name(csv_entry.dep.to_owned(), csv_entry.nom_dep.to_owned())
                             == &departement
                         {
                             true => Some(csv_entry.code_iris.clone()),
@@ -135,16 +136,6 @@ impl CSVEntryStorage {
         }
 
         results
-    }
-
-    pub fn get_coms(&self) -> HashSet<String> {
-        let all_com: Vec<String> = self
-            .get_csv_entries()
-            .iter()
-            .map(|csv_entry| csv_entry.libcom.to_owned())
-            .collect();
-
-        std::collections::HashSet::from_iter(all_com)
     }
 
     pub fn get_csv_entries(&self) -> Vec<EntryCSV> {
@@ -203,42 +194,27 @@ impl PostalCodeCsvStorage {
         Ok(())
     }
 
-    pub fn get_iris_codes(&self) -> HashSet<String> {
-        let iris_codes: Vec<String> = self
-            .get_csv_postal_codes()
-            .iter()
-            .map(|postal_code| postal_code.iris_code.to_owned())
-            .collect();
-
-        std::collections::HashSet::from_iter(iris_codes)
+    fn concat_name(&self, code: String, name: String) -> String {
+        match code.trim().is_empty() {
+            false => format!("{} - {}", code, name),
+            true => name,
+        }
     }
 
-    pub fn get_postal_codes(&self) -> HashSet<String> {
-        let postal_codes: Vec<String> = self
-            .get_csv_postal_codes()
-            .iter()
-            .map(|postal_code| postal_code.postal_code.to_owned())
-            .collect();
+    pub fn get_iris_and_geoloc_with_postal_code(&self) -> BTreeMap<String, Iris> {
+        let mut results: BTreeMap<String, Iris> = BTreeMap::new();
 
-        std::collections::HashSet::from_iter(postal_codes)
-    }
+        for postal_code in &self.get_csv_postal_codes() {
+            let postal_code: &PostalCodeIrisCodeCSV = postal_code;
+            let data = postal_code.to_postal_code();
 
-    pub fn get_iris_and_geoloc_with_postal_code(&self) -> BTreeMap<String, Vec<Iris>> {
-        let mut results: BTreeMap<String, Vec<Iris>> = BTreeMap::new();
-        let postal_codes: HashSet<String> = self.get_postal_codes();
-        for postal_code in postal_codes {
-            let irises: Vec<Iris> = self
-                .get_csv_postal_codes()
-                .iter()
-                .filter_map(
-                    |csv_postal_code| match &csv_postal_code.postal_code == &postal_code {
-                        true => Some(csv_postal_code.to_postal_code()),
-                        false => None,
-                    },
-                )
-                .collect();
-
-            results.insert(postal_code.clone(), irises);
+            results.insert(
+                self.concat_name(
+                    postal_code.postal_code.to_owned(),
+                    postal_code.nom_com.to_owned(),
+                ),
+                data,
+            );
         }
 
         results
