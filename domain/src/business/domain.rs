@@ -50,4 +50,11 @@ impl EntryDomainTrait for EntryDomain {
             None => Err(EntryDomainError::NotFoundError),
         }
     }
+
+    fn get_regional_index(&self, region: String) -> EntryDomainResult<Entry> {
+        match self.entry_datastore.get_region_entry(region).unwrap() {
+            Some(regional_entry) => Ok(regional_entry),
+            None => Err(EntryDomainError::NotFoundError)
+        }
+    }
 }
