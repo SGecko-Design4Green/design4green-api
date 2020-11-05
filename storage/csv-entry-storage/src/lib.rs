@@ -62,7 +62,10 @@ impl CSVEntryStorage {
     }
 
     fn concat_name(&self, code: String, name: String) -> String {
-        format!("{} - {}", code, name)
+        match name.trim().is_empty() {
+            false => format!("{} - {}", code, name),
+            true => "".to_string(),
+        }
     }
 
     pub fn get_entries(&self) -> Vec<Entry> {
@@ -110,6 +113,9 @@ impl CSVEntryStorage {
                     .collect(),
             );
         }
+
+        //Remove unasigned items
+        results.remove_entry(&"".to_string());
         results
     }
 
@@ -135,6 +141,8 @@ impl CSVEntryStorage {
             );
         }
 
+        //Remove unasigned items
+        results.remove_entry(&"".to_string());
         results
     }
 
