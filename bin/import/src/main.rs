@@ -52,7 +52,6 @@ fn main() -> ImportResult<()> {
     let now = Instant::now();
     let mut storage = CSVEntryStorage::new("resources/full.csv".to_string());
     &storage.load();
-    /*
     //CREATE INDEX FOR REGIONS
     let reg_iris = &storage.get_regions_with_iris();
     println!("REG_IRIS >> Lines {:?}", reg_iris.len());
@@ -65,13 +64,11 @@ fn main() -> ImportResult<()> {
 
     //CREATE INDEX FOR NATIONAL ENTRIES
 
-
     println!(
         "Duration : {} seconds and {} nanoseconds",
         now.elapsed().as_secs(),
         now.elapsed().subsec_nanos()
     );
-    */
 
     let now = Instant::now();
 
