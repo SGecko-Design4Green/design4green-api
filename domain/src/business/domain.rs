@@ -1,17 +1,17 @@
 use crate::business::error::*;
 use crate::business::traits::EntryDomainTrait;
-use crate::core::entry::{Entry, InformationAccess, NumericInterfacesAccess, AdministrativeCompetencies, NumericCompetencies};
+use crate::core::entry::{
+    AdministrativeCompetencies, Entry, InformationAccess, NumericCompetencies,
+    NumericInterfacesAccess,
+};
 use crate::storage::traits::{EntryStorageTrait, IndexStorageTrait};
 use std::boxed::Box;
 
 pub struct EntryDomain {
     pub idx_regions: Box<dyn IndexStorageTrait>,
     pub idx_departments: Box<dyn IndexStorageTrait>,
-<<<<<<< HEAD
     pub idx_cities: Box<dyn IndexStorageTrait>,
-=======
     pub idx_insee_coms: Box<dyn IndexStorageTrait>,
->>>>>>> d699084b47a342db68e3a3929ef66632242f42ee
     pub entry_datastore: Box<dyn EntryStorageTrait>,
 }
 
@@ -19,11 +19,8 @@ impl EntryDomain {
     pub fn new(
         idx_regions: Box<dyn IndexStorageTrait>,
         idx_departments: Box<dyn IndexStorageTrait>,
-<<<<<<< HEAD
         idx_cities: Box<dyn IndexStorageTrait>,
-=======
         idx_insee_coms: Box<dyn IndexStorageTrait>,
->>>>>>> d699084b47a342db68e3a3929ef66632242f42ee
         entry_datastore: Box<dyn EntryStorageTrait>,
     ) -> Self {
         EntryDomain {
@@ -31,7 +28,7 @@ impl EntryDomain {
             idx_departments,
             idx_cities,
             entry_datastore,
-            idx_insee_coms
+            idx_insee_coms,
         }
     }
 }
@@ -99,12 +96,10 @@ impl EntryDomainTrait for EntryDomain {
         println!("get city {:?}", code_insee);
         let iris_codes_res = match self.idx_insee_coms.get_index(code_insee) {
             Ok(optional_code) => match optional_code {
-                Some(codes) => {
-                    Ok(codes.clone())
-                },
-                None => Err(EntryDomainError::NotFoundError)
-            }
-            Err(_) => Err(EntryDomainError::NotFoundError)
+                Some(codes) => Ok(codes.clone()),
+                None => Err(EntryDomainError::NotFoundError),
+            },
+            Err(_) => Err(EntryDomainError::NotFoundError),
         };
 
         match iris_codes_res {
@@ -112,27 +107,62 @@ impl EntryDomainTrait for EntryDomain {
                 println!("{:?} iris retrieved", iris_code);
                 let mut cityEntries: Vec<Entry> = Vec::new();
                 for iris_code in iris_code.iter() {
-                    match self.entry_datastore.get_entry(iris_code.to_string()).unwrap() {
+                    match self
+                        .entry_datastore
+                        .get_entry(iris_code.to_string())
+                        .unwrap()
+                    {
                         Some(neighbor_entry) => {
                             cityEntries.push(neighbor_entry);
-                        },
-                        None => { }
+                        }
+                        None => {}
                     };
-                };
+                }
 
                 let num_of_neighbors = cityEntries.len() as f64;
                 println!("{:?} neighbors", num_of_neighbors);
-                let sum_of_global: f64 = cityEntries.iter().map(|entry| entry.global.unwrap()).sum();
-                let sum_of_global_numeric_competencies: f64 = cityEntries.iter().map(|entry| entry.numeric_competencies.clone().unwrap().global.unwrap()).sum();
-                let sum_of_global_administrative_competencies: f64 = cityEntries.iter().map(|entry| entry.administrative_competencies.clone().unwrap().global.unwrap()).sum();
-                let sum_of_global_numeric_interfaces_access: f64 = cityEntries.iter().map(|entry| entry.numeric_interfaces_access.clone().unwrap().global.unwrap()).sum();
-                let sum_of_global_information_access: f64 = cityEntries.iter().map(|entry| entry.information_access.clone().unwrap().global.unwrap()).sum();
+                let sum_of_global: f64 =
+                    cityEntries.iter().map(|entry| entry.global.unwrap()).sum();
+                let sum_of_global_numeric_competencies: f64 = cityEntries
+                    .iter()
+                    .map(|entry| entry.numeric_competencies.clone().unwrap().global.unwrap())
+                    .sum();
+                let sum_of_global_administrative_competencies: f64 = cityEntries
+                    .iter()
+                    .map(|entry| {
+                        entry
+                            .administrative_competencies
+                            .clone()
+                            .unwrap()
+                            .global
+                            .unwrap()
+                    })
+                    .sum();
+                let sum_of_global_numeric_interfaces_access: f64 = cityEntries
+                    .iter()
+                    .map(|entry| {
+                        entry
+                            .numeric_interfaces_access
+                            .clone()
+                            .unwrap()
+                            .global
+                            .unwrap()
+                    })
+                    .sum();
+                let sum_of_global_information_access: f64 = cityEntries
+                    .iter()
+                    .map(|entry| entry.information_access.clone().unwrap().global.unwrap())
+                    .sum();
 
                 let avg_global = sum_of_global / num_of_neighbors;
-                let avg_global_numeric_competencies = sum_of_global_numeric_competencies / num_of_neighbors;
-                let avg_global_administrative_competencies = sum_of_global_administrative_competencies / num_of_neighbors;
-                let avg_global_numeric_interfaces_access = sum_of_global_numeric_interfaces_access / num_of_neighbors;
-                let avg_global_information_access = sum_of_global_information_access / num_of_neighbors;
+                let avg_global_numeric_competencies =
+                    sum_of_global_numeric_competencies / num_of_neighbors;
+                let avg_global_administrative_competencies =
+                    sum_of_global_administrative_competencies / num_of_neighbors;
+                let avg_global_numeric_interfaces_access =
+                    sum_of_global_numeric_interfaces_access / num_of_neighbors;
+                let avg_global_information_access =
+                    sum_of_global_information_access / num_of_neighbors;
 
                 let found_entry = cityEntries.get(0).unwrap();
 
@@ -144,9 +174,17 @@ impl EntryDomainTrait for EntryDomain {
                     None,
                     Some(InformationAccess::new(
                         Some(avg_global_information_access),
-                        found_entry.information_access.clone().unwrap().global_region,
+                        found_entry
+                            .information_access
+                            .clone()
+                            .unwrap()
+                            .global_region,
                         found_entry.information_access.clone().unwrap().global_dept,
-                        found_entry.information_access.clone().unwrap().global_national,
+                        found_entry
+                            .information_access
+                            .clone()
+                            .unwrap()
+                            .global_national,
                         None,
                         None,
                         None,
@@ -154,9 +192,21 @@ impl EntryDomainTrait for EntryDomain {
                     )),
                     Some(NumericInterfacesAccess::new(
                         Some(avg_global_numeric_interfaces_access),
-                        found_entry.numeric_interfaces_access.clone().unwrap().global_region,
-                        found_entry.numeric_interfaces_access.clone().unwrap().global_dept,
-                        found_entry.numeric_interfaces_access.clone().unwrap().global_national,
+                        found_entry
+                            .numeric_interfaces_access
+                            .clone()
+                            .unwrap()
+                            .global_region,
+                        found_entry
+                            .numeric_interfaces_access
+                            .clone()
+                            .unwrap()
+                            .global_dept,
+                        found_entry
+                            .numeric_interfaces_access
+                            .clone()
+                            .unwrap()
+                            .global_national,
                         None,
                         None,
                         None,
@@ -164,25 +214,48 @@ impl EntryDomainTrait for EntryDomain {
                     )),
                     Some(AdministrativeCompetencies::new(
                         Some(avg_global_administrative_competencies),
-                        found_entry.administrative_competencies.clone().unwrap().global_region,
-                        found_entry.administrative_competencies.clone().unwrap().global_dept,
-                        found_entry.administrative_competencies.clone().unwrap().global_national,
+                        found_entry
+                            .administrative_competencies
+                            .clone()
+                            .unwrap()
+                            .global_region,
+                        found_entry
+                            .administrative_competencies
+                            .clone()
+                            .unwrap()
+                            .global_dept,
+                        found_entry
+                            .administrative_competencies
+                            .clone()
+                            .unwrap()
+                            .global_national,
                         None,
                         None,
                     )),
                     Some(NumericCompetencies::new(
                         Some(avg_global_numeric_competencies),
-                        found_entry.numeric_competencies.clone().unwrap().global_region,
-                        found_entry.numeric_competencies.clone().unwrap().global_dept,
-                        found_entry.numeric_competencies.clone().unwrap().global_national,
+                        found_entry
+                            .numeric_competencies
+                            .clone()
+                            .unwrap()
+                            .global_region,
+                        found_entry
+                            .numeric_competencies
+                            .clone()
+                            .unwrap()
+                            .global_dept,
+                        found_entry
+                            .numeric_competencies
+                            .clone()
+                            .unwrap()
+                            .global_national,
                         None,
                         None,
                     )),
                 ))
             }
-            Err(_) => Err(EntryDomainError::NotFoundError)
+            Err(_) => Err(EntryDomainError::NotFoundError),
         }
-
     }
 
     fn get_district_index(&self, iriscode: String) -> EntryDomainResult<Entry> {
