@@ -4,6 +4,7 @@ use domain::storage::traits::IndexStorageTrait;
 use std::collections::BTreeMap;
 use std::fs::File;
 use std::io::BufReader;
+use std::ops::Bound::Included;
 
 pub struct MemoryIndexStorage {
     pub index: BTreeMap<String, Vec<String>>,
@@ -26,7 +27,18 @@ impl IndexStorageTrait for MemoryIndexStorage {
         start_with: Option<String>,
     ) -> StorageResult<Vec<String>> {
         let mut results = Vec::new();
-        for (key, _) in self.index.iter() {
+
+        let index = match start_with {
+            Some(value) => {
+                let start: &String = &value;
+                let end: &String = &format!("{}{}", value.to_string(), "z");
+                let bound = (Included(start), Included(end));
+                self.index.range::<String, _>(bound)
+            }
+            None => self.index.range("0".to_string()..),
+        };
+
+        for (key, _) in index {
             if key.contains(&query) {
                 results.push(key.to_string());
             }
