@@ -27,7 +27,7 @@ impl IndexStorageTrait for MemoryIndexStorage {
         }
     }
 
-    fn get_all(&self) -> StorageResult<Vec<String>> {
+    fn get_all_values(&self) -> StorageResult<Vec<String>> {
         let size = self.index.iter().fold(0, |acc, index| acc + index.1.len());
 
         let mut result: Vec<String> = Vec::with_capacity(size);
@@ -35,6 +35,11 @@ impl IndexStorageTrait for MemoryIndexStorage {
             result.extend_from_slice(&index.1);
         }
         Ok(result)
+    }
+
+    fn get_all_keys(&self) -> StorageResult<Vec<String>> {
+        let keys: Vec<String> = self.index.keys().cloned().collect();
+        Ok(keys)
     }
 }
 

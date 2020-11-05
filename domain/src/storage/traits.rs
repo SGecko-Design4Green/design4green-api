@@ -11,5 +11,6 @@ pub trait EntryStorageTrait: Sync + Send {
 
 pub trait IndexStorageTrait: Sync + Send {
     fn get_index(&self, value: String) -> StorageResult<Option<Vec<String>>>;
-    fn get_all(&self) -> StorageResult<Vec<String>>;
+    fn get_all_values(&self) -> StorageResult<Vec<String>>;
+    fn get_all_keys(&self) -> StorageResult<Vec<String>>;
 }

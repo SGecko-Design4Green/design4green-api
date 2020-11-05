@@ -3,4 +3,5 @@ use crate::core::entry::*;
 
 pub trait EntryDomainTrait: Sync + Send {
     fn get_all(&self) -> EntryDomainResult<Vec<Entry>>;
+    fn get_regions(&self) -> EntryDomainResult<Vec<String>>;
 }
