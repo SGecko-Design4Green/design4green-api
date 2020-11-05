@@ -63,6 +63,9 @@ fn main() -> ImportResult<()> {
     println!("DEP_IRIS >> Lines {:?}", dep_iris.len());
     serialize_index_to_file("departments".to_string(), dep_iris);
 
+    //CREATE INDEX FOR NATIONAL ENTRIES
+
+
     println!(
         "Duration : {} seconds and {} nanoseconds",
         now.elapsed().as_secs(),

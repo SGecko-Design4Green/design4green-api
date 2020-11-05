@@ -146,6 +146,10 @@ impl CSVEntryStorage {
         results
     }
 
+    pub fn get_national_entries() -> Entry {
+        unimplemented!()
+    }
+
     pub fn get_csv_entries(&self) -> Vec<EntryCSV> {
         match &self.entries {
             Some(entries) => entries.to_vec(),
