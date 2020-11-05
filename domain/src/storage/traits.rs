@@ -6,7 +6,7 @@ pub trait EntryStorageTrait: Sync + Send {
     fn get_entry(&self, iris_code: String) -> StorageResult<Option<Entry>>;
     fn get_national_entry(&self) -> StorageResult<Option<Entry>>;
     fn get_region_entry(&self, iris_code: String) -> StorageResult<Option<Entry>>;
-    fn get_department_entry(&self, department: String) -> StorageResult<Option<Entry>>;
+    fn get_department_entry(&self, iris_code: String) -> StorageResult<Option<Entry>>;
     fn create(&self, iris_code: String, entry: Entry) -> StorageResult<()>;
 }
 

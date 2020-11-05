@@ -66,7 +66,14 @@ impl EntryDomainTrait for EntryDomain {
     }
 
     fn get_departmental_index(&self, department: String) -> EntryDomainResult<Entry> {
-        match self.entry_datastore.get_department_entry(department).unwrap() {
+        let iris_code = match self.idx_departments.get_index(department).unwrap() {
+            Some(codes) => {
+                Ok(codes.first().unwrap().clone())
+            },
+            None => Err(EntryDomainError::NotFoundError)
+        };
+
+        match self.entry_datastore.get_department_entry(iris_code?.to_string()).unwrap() {
             Some(departmental_entry) => Ok(departmental_entry),
             None => Err(EntryDomainError::NotFoundError)
         }

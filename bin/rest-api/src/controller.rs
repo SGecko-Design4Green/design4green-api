@@ -72,14 +72,18 @@ pub fn get_regional_index(
 
 pub fn get_departmental_index(
     wrap_state: Data<Arc<Mutex<AppState>>>,
-    _req: HttpRequest,
+    req: HttpRequest,
 ) -> HttpResponse {
     let state = wrap_state.lock().unwrap();
     let domain = state.get_domain();
 
-    let dept: String = "".into();
-    match domain.get_departmental_index(dept) {
-        Ok(entry) => HttpResponse::Ok().json(entry),
-        Err(_) => HttpResponse::InternalServerError().body("Error with backend."),
+    match req.match_info().get("dept") {
+        Some(dept) => match domain.get_departmental_index(dept.to_string()) {
+            Ok(entry) => HttpResponse::Ok().json(entry),
+            Err(_) => HttpResponse::InternalServerError().body("Error with backend."),
+        },
+        None => HttpResponse::BadRequest().body("No region was given."),
     }
+
+
 }
