@@ -1,5 +1,5 @@
 [package]
-name = "csv-entry-storage"
+name = "memory-index-storage"
 version = "0.1.0"
 authors = ["SlackMagiC <laurent.pietrzyk@gmail.com>"]
 edition = "2018"
@@ -7,18 +7,18 @@ edition = "2018"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [lib]
-name = "csv_entry_storage"
-
+name = "memory_index_storage"
 
 [dependencies]
-## Error management
-thiserror = "1.0"
+# Quick hashmap thread shareable.
+dashmap = { version ="3.11.10", features = ["serde"] }
 
-## Domain
+##DOMAIN
 domain = { path = "../../domain" }
 
-## CSV management
-csv = "1.1.4"
+## UUID management
+uuid = { version = "0.8.1", features = ["v5", "serde"]}
+chrono = { version = "^0.4", features = ["serde"] }
 
 ##SERIALIZATION TO JSON
 serde = "1.0"

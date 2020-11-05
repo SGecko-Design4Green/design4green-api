@@ -3,6 +3,7 @@ members = [
     "bin/bench",
     "bin/rest-api",
     "storage/csv-entry-storage",
+    "storage/memory-index-storage",
     "storage/sled-db-entry-storage",
     "domain"
         ]

@@ -14,6 +14,11 @@ pub enum StorageError {
         #[from]
         source: std::io::Error,
     },
+    #[error("Serde Json error: {source}")]
+    SerdeJson {
+        #[from]
+        source: serde_json::Error,
+    },
 }
 
 //Define a generic error type to simplify return.

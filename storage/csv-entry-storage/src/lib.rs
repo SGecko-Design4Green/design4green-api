@@ -109,7 +109,6 @@ impl CSVEntryStorage {
                     .collect(),
             );
         }
-
         results
     }
 
