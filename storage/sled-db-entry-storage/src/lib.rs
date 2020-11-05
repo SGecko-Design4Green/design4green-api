@@ -31,12 +31,16 @@ impl EntryStorageTrait for SledEntriesStorage {
         Err(StorageError::NotImplemented)
     }
     fn get_entry(&self, iris_code: String) -> StorageResult<Option<Entry>> {
-        Err(StorageError::NotImplemented)
+        let tree = self.get_entries_tree();
+        match tree.get(iris_code.to_string()) {
+            Ok(wrap_cbor_entry) => Ok(Some(from_slice(&wrap_cbor_entry.unwrap()).unwrap())),
+            Err(_) => Err(StorageError::NotImplemented),
+        }
     }
 
     fn create(&self, iris_code: String, entry: Entry) -> StorageResult<()> {
         let tree = self.get_entries_tree();
-        match tree.insert(iris_code.as_bytes(), to_vec(&entry).unwrap()) {
+        match tree.insert(iris_code, to_vec(&entry).unwrap()) {
             Ok(_) => Ok(()),
             Err(_) => Err(StorageError::NotImplemented),
         }
