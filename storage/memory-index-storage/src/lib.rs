@@ -28,11 +28,9 @@ impl IndexStorageTrait for MemoryIndexStorage {
     }
 
     fn get_all(&self) -> StorageResult<Vec<String>> {
-        self.index.values();
         let size = self.index.iter().fold(0, |acc, index| acc + index.1.len());
 
         let mut result: Vec<String> = Vec::with_capacity(size);
-
         for index in self.index.iter() {
             result.extend_from_slice(&index.1);
         }
