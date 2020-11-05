@@ -31,29 +31,22 @@ pub enum ImportError {
 pub type ImportResult<T> = std::result::Result<T, ImportError>;
 
 fn main() -> ImportResult<()> {
-    /*let entry = Entry::new(InformationAccess::new(
-    ));*/
-    println!("Hello, world!");
-    //println!("{:#?}", entry);
-
+    let now = Instant::now();
     let mut storage = PostalCodeCsvStorage::new("resources/postal.csv".to_string());
     &storage.load();
+
     let iris_codes_postal_codes = &storage.get_iris_and_geoloc_with_postal_code();
     serialize_index_to_file("postal".to_string(), iris_codes_postal_codes)?;
     println!("Postal >> Lines {:?}", iris_codes_postal_codes.len());
+    println!(
+        "Duration : {} seconds and {} nanoseconds",
+        now.elapsed().as_secs(),
+        now.elapsed().subsec_nanos()
+    );
 
     let now = Instant::now();
     let mut storage = CSVEntryStorage::new("resources/full.csv".to_string());
-
     &storage.load();
-    let dep = &storage.get_departments();
-    println!("DEP >> Lines {:?}", dep.len());
-
-    let reg = &storage.get_regions();
-    println!("REG >> Lines {:?}", reg.len());
-
-    let res = &storage.get_entries();
-    println!("ENTRY >> Lines {:?}", res.len());
 
     //CREATE INDEX FOR REGIONS
     let reg_iris = &storage.get_regions_with_iris();
