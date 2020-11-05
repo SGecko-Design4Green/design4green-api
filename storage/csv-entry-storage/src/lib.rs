@@ -1,23 +1,18 @@
 #[macro_use]
 extern crate serde_derive;
 
-use domain::core::entry::Entry;
-use domain::core::entry::Iris;
-use domain::storage::error::*;
-use entry_csv::EntryCSV;
-use postal_code_csv_index::PostalCodeIrisCodeCSV;
-use std::fs::File;
-use std::io::prelude::*;
-use std::io::{self, BufReader};
-use std::process;
-use thiserror::Error;
 pub mod entry_csv;
 pub mod postal_code_csv_index;
-use std::collections::HashMap;
+
+use domain::core::entry::Entry;
+use domain::core::entry::Iris;
+use entry_csv::EntryCSV;
+use postal_code_csv_index::PostalCodeIrisCodeCSV;
 use std::collections::BTreeMap;
 use std::collections::HashSet;
 use std::fs;
 use std::iter::FromIterator;
+use thiserror::Error;
 
 //Define the possible errors
 #[derive(Error, Debug)]
@@ -60,7 +55,6 @@ impl CSVEntryStorage {
 
         for result in rdr.deserialize() {
             let record: EntryCSV = result?;
-            println!("{:#?}", &record);
             entries.push(record);
         }
         self.entries = Some(entries);
@@ -99,8 +93,8 @@ impl CSVEntryStorage {
         std::collections::HashSet::from_iter(all_reg)
     }
 
-    pub fn get_regions_with_iris(&self) -> HashMap<String, Vec<String>> {
-        let mut results: HashMap<String, Vec<String>> = HashMap::new();
+    pub fn get_regions_with_iris(&self) -> BTreeMap<String, Vec<String>> {
+        let mut results: BTreeMap<String, Vec<String>> = BTreeMap::new();
         let regions = self.get_regions();
 
         for region in regions {
@@ -108,14 +102,9 @@ impl CSVEntryStorage {
                 region.clone(),
                 self.get_csv_entries()
                     .iter()
-                    .filter_map(|csv_entry| {
-                        match &self
-                            .concat_name(csv_entry.dep.to_owned(), csv_entry.libdep.to_owned())
-                            == &region
-                        {
-                            true => Some(csv_entry.code_iris.clone()),
-                            false => None,
-                        }
+                    .filter_map(|csv_entry| match &csv_entry.libreg == &region {
+                        true => Some(csv_entry.code_iris.clone()),
+                        false => None,
                     })
                     .collect(),
             );
@@ -123,8 +112,8 @@ impl CSVEntryStorage {
         results
     }
 
-    pub fn get_departements_with_iris(&self) -> HashMap<String, Vec<String>> {
-        let mut results: HashMap<String, Vec<String>> = HashMap::new();
+    pub fn get_departements_with_iris(&self) -> BTreeMap<String, Vec<String>> {
+        let mut results: BTreeMap<String, Vec<String>> = BTreeMap::new();
         let departements = self.get_departments();
 
         for departement in departements {
@@ -132,9 +121,14 @@ impl CSVEntryStorage {
                 departement.clone(),
                 self.get_csv_entries()
                     .iter()
-                    .filter_map(|csv_entry| match &csv_entry.libdep == &departement {
-                        true => Some(csv_entry.code_iris.clone()),
-                        false => None,
+                    .filter_map(|csv_entry| {
+                        match &self
+                            .concat_name(csv_entry.dep.to_owned(), csv_entry.libdep.to_owned())
+                            == &departement
+                        {
+                            true => Some(csv_entry.code_iris.clone()),
+                            false => None,
+                        }
                     })
                     .collect(),
             );
@@ -233,20 +227,19 @@ impl PostalCodeCsvStorage {
         let mut results: BTreeMap<String, Vec<Iris>> = BTreeMap::new();
         let postal_codes: HashSet<String> = self.get_postal_codes();
         for postal_code in postal_codes {
-            let irises : Vec<Iris> = self
-            .get_csv_postal_codes()
-            .iter()
-            .filter_map(
-                |csv_postal_code| match &csv_postal_code.postal_code == &postal_code {
-                    true => Some(csv_postal_code.to_postal_code()),
-                    false => None,
-                },
-            )
-            .collect();
+            let irises: Vec<Iris> = self
+                .get_csv_postal_codes()
+                .iter()
+                .filter_map(
+                    |csv_postal_code| match &csv_postal_code.postal_code == &postal_code {
+                        true => Some(csv_postal_code.to_postal_code()),
+                        false => None,
+                    },
+                )
+                .collect();
 
             results.insert(postal_code.clone(), irises);
         }
-
 
         results
     }

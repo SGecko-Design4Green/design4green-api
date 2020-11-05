@@ -1,4 +1,6 @@
 use csv_entry_storage::CSVEntryStorage;
+use csv_entry_storage::PostalCodeCsvStorage;
+
 use domain::core::entry::*;
 use serde::de::DeserializeOwned;
 use std::collections::{HashMap, HashSet};
@@ -34,11 +36,14 @@ fn main() -> ImportResult<()> {
     println!("Hello, world!");
     //println!("{:#?}", entry);
 
+    let mut storage = PostalCodeCsvStorage::new("resources/postal.csv".to_string());
+    let iris_codes_postal_codes = &storage.get_iris_and_geoloc_with_postal_code();
+    println!("DEP >> Lines {:?}", iris_codes_postal_codes.len());
+
     let now = Instant::now();
     let mut storage = CSVEntryStorage::new("resources/full.csv".to_string());
 
     &storage.load();
-
     let dep = &storage.get_departments();
     println!("DEP >> Lines {:?}", dep.len());
 
@@ -77,6 +82,7 @@ fn serialize_index_to_file<T: DeserializeOwned + serde::Serialize>(
     let path = format!("resources/indexes/idx_{}.json", name);
     let path = Path::new(&path);
 
+    fs::remove_file(path);
     let file = match path.exists() {
         true => OpenOptions::new().write(true).open(path)?,
         false => File::create(path)?,
