@@ -47,10 +47,11 @@ impl EntryDomainTrait for EntryDomain {
     }
 
     fn search_cities(&self, department: String, query: String) -> EntryDomainResult<Vec<String>> {
-        Ok(self
-            .idx_departments
+        self.idx_departments
             .search_on_key(query, Some(department))
-            .unwrap())
+            .unwrap();
+
+        Ok(Vec::new())
     }
 
     fn get_national_index(&self) -> EntryDomainResult<Entry> {
