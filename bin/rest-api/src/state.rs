@@ -11,12 +11,12 @@ pub struct AppState {
 
 impl AppState {
     pub fn new() -> Self {
-
         AppState {
             entry_domain: Box::new(EntryDomain::new(
                 Box::new(MemoryIndexStorage::new(Configuration::get_index_path() + "idx_regions.json").unwrap()),
                 Box::new(MemoryIndexStorage::new(Configuration::get_index_path() + "idx_departments.json").unwrap()),
-                    Box::new(SledEntriesStorage::new(Configuration::get_sled_db_path()))
+                Box::new(MemoryIndexStorage::new(Configuration::get_index_path() + "idx_insee_coms.json").unwrap()),
+                Box::new(SledEntriesStorage::new(Configuration::get_sled_db_path())),
             )),
         }
     }
