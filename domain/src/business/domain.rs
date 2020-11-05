@@ -57,4 +57,11 @@ impl EntryDomainTrait for EntryDomain {
             None => Err(EntryDomainError::NotFoundError)
         }
     }
+
+    fn get_departmental_index(&self, department: String) -> EntryDomainResult<Entry> {
+        match self.entry_datastore.get_department_entry(department).unwrap() {
+            Some(departmental_entry) => Ok(departmental_entry),
+            None => Err(EntryDomainError::NotFoundError)
+        }
+    }
 }
