@@ -41,7 +41,13 @@ impl EntryStorageTrait for SledEntriesStorage {
     fn get_entry(&self, iris_code: String) -> StorageResult<Option<Entry>> {
         let tree = self.get_entries_tree();
         match tree.get(iris_code.to_string()) {
-            Ok(wrap_cbor_entry) => Ok(Some(from_slice(&wrap_cbor_entry.unwrap()).unwrap())),
+            Ok(wrap_cbor_entry) => match wrap_cbor_entry {
+                Some(cbor) => match from_slice(&cbor) {
+                    Ok(deser_value) => Ok(Some(deser_value)),
+                    Err(_) => Err(StorageError::NotImplemented)
+                }
+                None => Err(StorageError::NotImplemented)
+            }
             Err(_) => Err(StorageError::NotImplemented),
         }
     }
@@ -231,70 +237,6 @@ impl EntryStorageTrait for SledEntriesStorage {
             None => Err(StorageError::AnotherError)
         }
 
-    }
-
-    fn get_district_entry(&self, iris_code: String) -> StorageResult<Option<Entry>> {
-        let tree = self.get_entries_tree();
-
-        let mut first_dept_entry: Option<Entry> = None;
-        for entry in tree.iter() {
-            let entry_by_code = entry.unwrap();
-            let decoded_entry: Entry = from_slice(&entry_by_code.1).unwrap();
-            let stored_iris = decoded_entry.iris_code.clone().unwrap();
-            if &stored_iris == &iris_code {
-                first_dept_entry = Some(decoded_entry.clone());
-                break;
-            }
-        }
-
-        match first_dept_entry {
-            Some(found_entry) => {
-                Ok(Some(Entry::new(
-                    found_entry.global,
-                    found_entry.global_region,
-                    found_entry.global_dept,
-                    found_entry.global_national,
-                    None,
-                    Some(InformationAccess::new(
-                        found_entry.information_access.clone().unwrap().global,
-                        found_entry.information_access.clone().unwrap().global_region,
-                        found_entry.information_access.clone().unwrap().global_dept,
-                        found_entry.information_access.clone().unwrap().global_national,
-                        None,
-                        None,
-                        None,
-                        None,
-                    )),
-                    Some(NumericInterfacesAccess::new(
-                        found_entry.numeric_interfaces_access.clone().unwrap().global,
-                        found_entry.numeric_interfaces_access.clone().unwrap().global_region,
-                        found_entry.numeric_interfaces_access.clone().unwrap().global_dept,
-                        found_entry.numeric_interfaces_access.clone().unwrap().global_national,
-                        None,
-                        None,
-                        None,
-                        None,
-                    )),
-                    Some(AdministrativeCompetencies::new(
-                        found_entry.administrative_competencies.clone().unwrap().global,
-                        found_entry.administrative_competencies.clone().unwrap().global_region,
-                        found_entry.administrative_competencies.clone().unwrap().global_dept,
-                        found_entry.administrative_competencies.clone().unwrap().global_national,
-                        None,
-                        None,
-                    )),
-                    Some(NumericCompetencies::new(
-                        found_entry.numeric_competencies.clone().unwrap().global,
-                        found_entry.numeric_competencies.clone().unwrap().global_region,
-                        found_entry.numeric_competencies.clone().unwrap().global_dept,
-                        found_entry.numeric_competencies.clone().unwrap().global_national,
-                        None,
-                        None,
-                    )),
-                )))
-            }
-            None => Err(StorageError::AnotherError)
-        }
     }
 
     fn create(&self, iris_code: String, entry: Entry) -> StorageResult<()> {

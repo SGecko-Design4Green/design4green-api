@@ -1,5 +1,6 @@
 use std::result::Result;
 use thiserror::Error;
+use crate::storage::error::StorageError;
 
 //Define the possible errors
 #[derive(Error, Debug)]
@@ -10,6 +11,11 @@ pub enum EntryDomainError {
     StorageError,
     #[error("Not found error")]
     NotFoundError,
+    #[error("Storage error: {source}")]
+    Storage {
+        #[from]
+        source: StorageError,
+    }
 }
 
 //Define a generic error type to simplify return.

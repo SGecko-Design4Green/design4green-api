@@ -9,6 +9,7 @@ pub trait EntryDomainTrait: Sync + Send {
     fn get_national_index(&self) -> EntryDomainResult<Entry>;
     fn get_regional_index(&self, region: String) -> EntryDomainResult<Entry>;
     fn get_departmental_index(&self, department: String) -> EntryDomainResult<Entry>;
+    fn get_city_index(&self, code_insee: String) -> EntryDomainResult<Entry>;
     fn get_district_index(&self, iriscode: String) -> EntryDomainResult<Entry>;
 
 }

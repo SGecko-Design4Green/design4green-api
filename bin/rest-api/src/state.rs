@@ -27,6 +27,12 @@ impl AppState {
                     MemoryIndexStorage::new(Configuration::get_index_path() + "idx_postal.json")
                         .unwrap(),
                 ),
+                Box::new(
+                    MemoryIndexStorage::new(
+                        Configuration::get_index_path() + "idx_insee_coms.json",
+                    )
+                    .unwrap(),
+                ),
                 Box::new(SledEntriesStorage::new(Configuration::get_sled_db_path())),
             )),
         }

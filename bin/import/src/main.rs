@@ -47,7 +47,6 @@ fn main() -> ImportResult<()> {
         now.elapsed().as_secs(),
         now.elapsed().subsec_nanos()
     );
-
     let now = Instant::now();
     let mut storage = CSVEntryStorage::new("resources/full.csv".to_string());
     &storage.load();
@@ -68,14 +67,6 @@ fn main() -> ImportResult<()> {
     serialize_index_to_file("departments".to_string(), dep_iris);
 
     //CREATE INDEX FOR NATIONAL ENTRIES
-
-    println!(
-        "Duration : {} seconds and {} nanoseconds",
-        now.elapsed().as_secs(),
-        now.elapsed().subsec_nanos()
-    );
-
-    let now = Instant::now();
     let db: Box<dyn EntryStorageTrait> = Box::new(SledEntriesStorage::new("database".to_string()));
 
     for entry_csv in &storage.get_entries() {
