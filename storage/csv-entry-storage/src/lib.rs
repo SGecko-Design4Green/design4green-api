@@ -81,63 +81,110 @@ impl CSVEntryStorage {
         let number_of_entries: f32 = csv_entries.len() as f32;
         let sum_entries_global_score: f32 = csv_entries
             .iter()
-                .map(|csv_entry|
-                    csv_entry.clean_and_parse_f32(&csv_entry.score_global_region_star)
-                        .unwrap()).sum();
+            .map(|csv_entry| {
+                csv_entry
+                    .clean_and_parse_f32(&csv_entry.score_global_region_star)
+                    .unwrap()
+            })
+            .sum();
+
+        println!("--------sum_entries_global_score done");
         let sum_entries_numeric_competencies: f32 = csv_entries
             .iter()
-                .map(|csv_entry|
-                    csv_entry.clean_and_parse_f32(&csv_entry.competences_numeriques_scolaires_region_1)
-                        .unwrap()).sum();
+            .map(|csv_entry| {
+                csv_entry
+                    .clean_and_parse_f32(&csv_entry.competences_numeriques_scolaires_region_1)
+                    .unwrap()
+            })
+            .sum();
+        println!("--------sum_entries_numeric_competencies done");
         let sum_entries_administrative_competencies: f32 = csv_entries
             .iter()
-                .map(|csv_entry|
-                    csv_entry.clean_and_parse_f32(&csv_entry.competences_administatives_region_1)
-                        .unwrap()).sum();
+            .map(|csv_entry| {
+                csv_entry
+                    .clean_and_parse_f32(&csv_entry.competences_administatives_region_1)
+                    .unwrap()
+            })
+            .sum();
+        println!("--------sum_entries_administrative_competencies done");
         let sum_entries_numeric_interface_access: f32 = csv_entries
             .iter()
-                .map(|csv_entry|
-                    csv_entry.clean_and_parse_f32(&csv_entry.acces_aux_interfaces_numeriques_region_1)
-                        .unwrap()).sum();
+            .map(|csv_entry| {
+                csv_entry
+                    .clean_and_parse_f32(&csv_entry.acces_aux_interfaces_numeriques_region_1)
+                    .unwrap()
+            })
+            .sum();
+        println!("--------sum_entries_numeric_interface_access done");
         let sum_entries_information_access: f32 = csv_entries
             .iter()
-                .map(|csv_entry|
-                    csv_entry.clean_and_parse_f32(&csv_entry.acces_information_region_1)
-                        .unwrap()).sum();
+            .map(|csv_entry| {
+                csv_entry
+                    .clean_and_parse_f32(&csv_entry.acces_information_region_1)
+                    .unwrap()
+            })
+            .sum();
+        println!("--------sum_entries_information_access done");
 
         AvgStat {
             avg_entries_global_score: sum_entries_global_score / number_of_entries,
             avg_entries_numeric_competencies: sum_entries_numeric_competencies / number_of_entries,
-            avg_entries_administrative_competencies: sum_entries_administrative_competencies / number_of_entries,
-            avg_entries_numeric_interface_access: sum_entries_numeric_interface_access / number_of_entries,
+            avg_entries_administrative_competencies: sum_entries_administrative_competencies
+                / number_of_entries,
+            avg_entries_numeric_interface_access: sum_entries_numeric_interface_access
+                / number_of_entries,
             avg_entries_information_access: sum_entries_information_access / number_of_entries,
         }
     }
 
     pub fn get_entries(&self) -> Vec<Entry> {
+        println!("---- national start");
         let nationalStats = self.get_stats(self.get_csv_entries());
+        println!("---- national end");
         let mut regionsStats: BTreeMap<String, AvgStat> = BTreeMap::new();
+
+        println!("> START REGIONS SUM");
         for region in self.get_regions() {
-            regionsStats
-                .insert(region.to_string(),
-                        self.get_stats(self.get_csv_entries()
-                            .iter().filter_map(|entry_csv| match &entry_csv.nom_reg == &region {
+            println!("---- {} start", region);
+            regionsStats.insert(
+                region.to_string(),
+                self.get_stats(
+                    self.get_csv_entries()
+                        .iter()
+                        .filter_map(|entry_csv| match &entry_csv.nom_reg == &region {
                             true => Some(entry_csv.clone()),
-                            false => None
-                        }).collect()));
+                            false => None,
+                        })
+                        .collect(),
+                ),
+            );
+
+            println!("---- {} done", region);
         }
 
+        println!("> START DEPARTMENTS SUM");
         let mut departmentsStats: BTreeMap<String, AvgStat> = BTreeMap::new();
         for department in self.get_departments() {
-            departmentsStats
-                .insert(department.to_string(),
-                self.get_stats(self.get_csv_entries()
-                    .iter()
-                        .filter_map(|csv_entry|
-                            match &department == &self.concat_name(csv_entry.dep.to_owned(), csv_entry.nom_dep.to_owned()) {
+            println!("---- {} start", department);
+            departmentsStats.insert(
+                department.to_string(),
+                self.get_stats(
+                    self.get_csv_entries()
+                        .iter()
+                        .filter_map(|csv_entry| {
+                            match &department
+                                == &self.concat_name(
+                                    csv_entry.dep.to_owned(),
+                                    csv_entry.nom_dep.to_owned(),
+                                ) {
                                 true => Some(csv_entry.clone()),
-                                false => None
-                            }).collect()));
+                                false => None,
+                            }
+                        })
+                        .collect(),
+                ),
+            );
+            println!("---- {} done", department);
         }
 
         self.get_csv_entries()
@@ -323,15 +370,9 @@ impl PostalCodeCsvStorage {
             let postal_code: &PostalCodeIrisCodeCSV = postal_code;
             let data = postal_code.to_postal_code();
 
-            let key = self.concat_name(
-                postal_code.get_code(),
-                postal_code.nom_com.to_owned(),
-            );
+            let key = self.concat_name(postal_code.get_code(), postal_code.nom_com.to_owned());
 
-            results.insert(
-                key,
-                data,
-            );
+            results.insert(key, data);
         }
 
         results

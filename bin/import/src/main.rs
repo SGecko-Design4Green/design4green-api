@@ -53,32 +53,32 @@ fn main() -> ImportResult<()> {
     let mut storage = CSVEntryStorage::new("resources/full.csv".to_string());
     &storage.load();
 
-        //CREATE INDEX FOR INSEE COM
-        let insee_com = &storage.get_insee_com_with_iris();
-        println!("INSEE_COM >> Lines {:?}", insee_com.len());
-        serialize_index_to_file("insee_coms".to_string(), insee_com);
-    
+    //CREATE INDEX FOR INSEE COM
     /*
-    //CREATE INDEX FOR REGIONS
-    let reg_iris = &storage.get_regions_with_iris();
-    println!("REG_IRIS >> Lines {:?}", reg_iris.len());
-    serialize_index_to_file("regions".to_string(), reg_iris);
+    let insee_com = &storage.get_insee_com_with_iris();
+    println!("INSEE_COM >> Lines {:?}", insee_com.len());
+    serialize_index_to_file("insee_coms".to_string(), insee_com);
+    */
+    /*
+        //CREATE INDEX FOR REGIONS
+        let reg_iris = &storage.get_regions_with_iris();
+        println!("REG_IRIS >> Lines {:?}", reg_iris.len());
+        serialize_index_to_file("regions".to_string(), reg_iris);
 
-    //CREATE INDEX FOR DEPARTEMENTS
-    let dep_iris = &storage.get_departements_with_iris();
-    println!("DEP_IRIS >> Lines {:?}", dep_iris.len());
-    serialize_index_to_file("departments".to_string(), dep_iris);
-    
-    //CREATE INDEX FOR NATIONAL ENTRIES
+        //CREATE INDEX FOR DEPARTEMENTS
+        let dep_iris = &storage.get_departements_with_iris();
+        println!("DEP_IRIS >> Lines {:?}", dep_iris.len());
+        serialize_index_to_file("departments".to_string(), dep_iris);
 
-    println!(
-        "Duration : {} seconds and {} nanoseconds",
-        now.elapsed().as_secs(),
-        now.elapsed().subsec_nanos()
-    );
-*/
+        //CREATE INDEX FOR NATIONAL ENTRIES
+
+        println!(
+            "Duration : {} seconds and {} nanoseconds",
+            now.elapsed().as_secs(),
+            now.elapsed().subsec_nanos()
+        );
+    */
     let now = Instant::now();
-
     let db: Box<dyn EntryStorageTrait> = Box::new(SledEntriesStorage::new("database".to_string()));
 
     for entry_csv in &storage.get_entries() {
@@ -88,6 +88,8 @@ fn main() -> ImportResult<()> {
 
     let all_db_entries = db.get_all().unwrap();
     println!("--> {:?}", all_db_entries.len());
+
+    serialize_index_to_file("insee_coms".to_string(), &all_db_entries);
 
     println!(
         "Duration : {} seconds and {} nanoseconds",
