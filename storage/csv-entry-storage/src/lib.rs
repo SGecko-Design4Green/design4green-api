@@ -147,7 +147,7 @@ impl CSVEntryStorage {
     }
 
     pub fn get_national_entries() -> Entry {
-        Entry::new()
+        unimplemented!()
     }
 
     pub fn get_csv_entries(&self) -> Vec<EntryCSV> {
