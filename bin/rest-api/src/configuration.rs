@@ -51,4 +51,8 @@ impl Configuration {
     pub fn get_sled_db_path() -> String {
         env::var("SLED_DB_PATH").expect("SLED_DB_PATH not found.")
     }
+
+    pub fn get_index_path() -> String {
+        env::var("INDEX_PATH").expect("INDEX_PATH not found.")
+    }
 }

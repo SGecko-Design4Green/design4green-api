@@ -9,5 +9,5 @@ members = [
         ]
 
 ##DEFAULT RUNNING BIN
-##default-members=["bin/rest-api"]
-default-members=["bin/import"]
+default-members=["bin/rest-api"]
+##default-members=["bin/import"]

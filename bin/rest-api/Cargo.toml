@@ -30,3 +30,6 @@ chrono = { version = "^0.4", features = ["serde"] }
 
 ##DOMAIN
 domain = { path = "../../domain" }
+
+##Memory storage
+memory-index-storage = { path = "../../storage/memory-index-storage" }

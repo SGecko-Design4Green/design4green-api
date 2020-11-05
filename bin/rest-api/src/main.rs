@@ -40,6 +40,8 @@ async fn main() -> io::Result<()> {
             .service(
                 web::scope("/api")
                     .route("/_", web::get().to(healthcheck))
+                    .route("/regions", web::get().to(get_regions))
+                    .route("/departments", web::get().to(get_departments))
                     .route("/index", web::get().to(entries_get_all)),
             )
             //STATIC CONF
