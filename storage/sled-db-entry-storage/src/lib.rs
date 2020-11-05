@@ -28,7 +28,15 @@ impl SledEntriesStorage {
 
 impl EntryStorageTrait for SledEntriesStorage {
     fn get_all(&self) -> StorageResult<Vec<Entry>> {
-        Err(StorageError::NotImplemented)
+        let tree = self.get_entries_tree();
+        let entries: Vec<Entry> = tree
+            .iter()
+            .map(|kv| {
+                let cbor_entry = kv.unwrap().1;
+                from_slice(&cbor_entry).unwrap()
+            })
+            .collect();
+        Ok(entries)
     }
     fn get_entry(&self, iris_code: String) -> StorageResult<Option<Entry>> {
         let tree = self.get_entries_tree();

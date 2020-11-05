@@ -10,6 +10,7 @@ edition = "2018"
 ##DOMAIN
 domain = { path = "../../domain" }
 csv-entry-storage = { path = "../../storage/csv-entry-storage" }
+sled-db-entry-storage = { path = "../../storage/sled-db-entry-storage" }
 
 ##SERIALIZATION TO JSON
 serde = "1.0"

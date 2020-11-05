@@ -7,11 +7,11 @@
 ### Referentiel:
 
 - [_] Routes:
-  - Regions (NOM)
-  - Departements (NUM + NOM)
+  - Regions [X]
+  - Departements [X]
   - Towns (NUM + NOMs)
 - [_] National statistics (JB)
-- [_] Insert into SLED (Laurent)
+- [x] Insert into SLED (Laurent) => Check get all
 - [_] Full text search.
 - [x] Create Index for JSON (loading at start)
 - [_] Create Index for Code (IRIS) Insee / CP

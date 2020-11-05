@@ -1,8 +1,12 @@
+use csv_entry_storage::entry_csv::EntryCSV;
 use csv_entry_storage::CSVEntryStorage;
 use csv_entry_storage::PostalCodeCsvStorage;
+use sled_db_entry_storage::SledEntriesStorage;
 
 use domain::core::entry::*;
+use domain::storage::traits::EntryStorageTrait;
 use serde::de::DeserializeOwned;
+use std::boxed::Box;
 use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::fs::File;
@@ -31,23 +35,24 @@ pub enum ImportError {
 pub type ImportResult<T> = std::result::Result<T, ImportError>;
 
 fn main() -> ImportResult<()> {
-    let now = Instant::now();
-    let mut storage = PostalCodeCsvStorage::new("resources/postal.csv".to_string());
-    &storage.load();
+    /*
+        let now = Instant::now();
+        let mut storage = PostalCodeCsvStorage::new("resources/postal.csv".to_string());
+        &storage.load();
 
-    let iris_codes_postal_codes = &storage.get_iris_and_geoloc_with_postal_code();
-    serialize_index_to_file("postal".to_string(), iris_codes_postal_codes)?;
-    println!("Postal >> Lines {:?}", iris_codes_postal_codes.len());
-    println!(
-        "Duration : {} seconds and {} nanoseconds",
-        now.elapsed().as_secs(),
-        now.elapsed().subsec_nanos()
-    );
-
+        let iris_codes_postal_codes = &storage.get_iris_and_geoloc_with_postal_code();
+        serialize_index_to_file("postal".to_string(), iris_codes_postal_codes)?;
+        println!("Postal >> Lines {:?}", iris_codes_postal_codes.len());
+        println!(
+            "Duration : {} seconds and {} nanoseconds",
+            now.elapsed().as_secs(),
+            now.elapsed().subsec_nanos()
+        );
+    */
     let now = Instant::now();
     let mut storage = CSVEntryStorage::new("resources/full.csv".to_string());
     &storage.load();
-
+    /*
     //CREATE INDEX FOR REGIONS
     let reg_iris = &storage.get_regions_with_iris();
     println!("REG_IRIS >> Lines {:?}", reg_iris.len());
@@ -63,6 +68,25 @@ fn main() -> ImportResult<()> {
         now.elapsed().as_secs(),
         now.elapsed().subsec_nanos()
     );
+    */
+
+    let now = Instant::now();
+
+    let db: Box<dyn EntryStorageTrait> = Box::new(SledEntriesStorage::new("database".to_string()));
+
+    for entry_csv in &storage.entries.unwrap() {
+        db.create(entry_csv.code_iris.to_owned(), entry_csv.to_entry());
+    }
+
+    let all_db_entries = db.get_all().unwrap();
+    println!("--> {:?}", all_db_entries.len());
+
+    println!(
+        "Duration : {} seconds and {} nanoseconds",
+        now.elapsed().as_secs(),
+        now.elapsed().subsec_nanos()
+    );
+
     Ok(())
 }
 
