@@ -20,7 +20,11 @@ impl MemoryIndexStorage {
 }
 
 impl IndexStorageTrait for MemoryIndexStorage {
-    fn search_on_key(&self, query: String) -> StorageResult<Vec<String>> {
+    fn search_on_key(
+        &self,
+        query: String,
+        start_with: Option<String>,
+    ) -> StorageResult<Vec<String>> {
         let mut results = Vec::new();
         for (key, _) in self.index.iter() {
             if key.contains(&query) {
