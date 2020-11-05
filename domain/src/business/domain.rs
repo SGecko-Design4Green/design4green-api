@@ -52,7 +52,14 @@ impl EntryDomainTrait for EntryDomain {
     }
 
     fn get_regional_index(&self, region: String) -> EntryDomainResult<Entry> {
-        match self.entry_datastore.get_region_entry(region).unwrap() {
+        let iris_code = match self.idx_regions.get_index(region).unwrap() {
+            Some(codes) => {
+                Ok(codes.first().unwrap().clone())
+            },
+            None => Err(EntryDomainError::NotFoundError)
+        };
+
+        match self.entry_datastore.get_region_entry(iris_code?.to_string()).unwrap() {
             Some(regional_entry) => Ok(regional_entry),
             None => Err(EntryDomainError::NotFoundError)
         }
