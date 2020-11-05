@@ -10,11 +10,11 @@
   - Regions (NOM)
   - Departements (NUM + NOM)
   - Towns (NUM + NOMs)
-- [_] National statistics
-- [_] Insert into SLED
+- [_] National statistics (JB)
+- [_] Insert into SLED (Laurent)
+- [_] Full text search.
 - [x] Create Index for JSON (loading at start)
 - [_] Create Index for Code (IRIS) Insee / CP
-- [_] Full text search.
 - [_] Geoloc neighbour (TOP 5 / KM)
 - [x] Memory index
 - [x] Github Workflow
@@ -27,7 +27,7 @@ Si Ville (Code postal + Nom) => Resultats Villes autours (ou villes département
 Si Quartier (Code iris + quartiers) => Resultats quartiers.
 
 - Index :
-  - Regions -> Departement
+  - Regions -> Departement (DONE)
   - CodePostal -> CodeInsee (DONE)
   - NomVille -> CodeInsee (DONE)
-  - CodeInsee -> Vec<CodeIris> (TODO)
+  - CodeInsee -> Vec<CodeIris> (Mehdi)
