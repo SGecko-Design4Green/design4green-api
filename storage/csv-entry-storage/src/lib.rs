@@ -88,7 +88,6 @@ impl CSVEntryStorage {
             })
             .sum();
 
-        println!("--------sum_entries_global_score done");
         let sum_entries_numeric_competencies: f32 = csv_entries
             .iter()
             .map(|csv_entry| {
@@ -97,7 +96,6 @@ impl CSVEntryStorage {
                     .unwrap()
             })
             .sum();
-        println!("--------sum_entries_numeric_competencies done");
         let sum_entries_administrative_competencies: f32 = csv_entries
             .iter()
             .map(|csv_entry| {
@@ -106,7 +104,6 @@ impl CSVEntryStorage {
                     .unwrap()
             })
             .sum();
-        println!("--------sum_entries_administrative_competencies done");
         let sum_entries_numeric_interface_access: f32 = csv_entries
             .iter()
             .map(|csv_entry| {
@@ -115,7 +112,6 @@ impl CSVEntryStorage {
                     .unwrap()
             })
             .sum();
-        println!("--------sum_entries_numeric_interface_access done");
         let sum_entries_information_access: f32 = csv_entries
             .iter()
             .map(|csv_entry| {
@@ -124,7 +120,6 @@ impl CSVEntryStorage {
                     .unwrap()
             })
             .sum();
-        println!("--------sum_entries_information_access done");
 
         AvgStat {
             avg_entries_global_score: sum_entries_global_score / number_of_entries,
@@ -138,9 +133,7 @@ impl CSVEntryStorage {
     }
 
     pub fn get_entries(&self) -> Vec<Entry> {
-        println!("---- national start");
         let nationalStats = self.get_stats(self.get_csv_entries());
-        println!("---- national end");
         let mut regionsStats: BTreeMap<String, AvgStat> = BTreeMap::new();
 
         println!("> START REGIONS SUM");
@@ -165,7 +158,6 @@ impl CSVEntryStorage {
         println!("> START DEPARTMENTS SUM");
         let mut departmentsStats: BTreeMap<String, AvgStat> = BTreeMap::new();
         for department in self.get_departments() {
-            println!("---- {} start", department);
             departmentsStats.insert(
                 department.to_string(),
                 self.get_stats(
@@ -184,7 +176,6 @@ impl CSVEntryStorage {
                         .collect(),
                 ),
             );
-            println!("---- {} done", department);
         }
 
         self.get_csv_entries()
@@ -217,19 +208,15 @@ impl CSVEntryStorage {
 
     pub fn get_insee_com_with_iris(&self) -> BTreeMap<String, Vec<String>> {
         let mut results: BTreeMap<String, Vec<String>> = BTreeMap::new();
-        let insee_coms = self.get_insee_coms();
 
-        for insee_com in insee_coms {
-            results.insert(
-                insee_com.clone(),
-                self.get_csv_entries()
-                    .iter()
-                    .filter_map(|csv_entry| match &csv_entry.insee_com == &insee_com {
-                        true => Some(csv_entry.code_iris.clone()),
-                        false => None,
-                    })
-                    .collect(),
-            );
+        for entry in self.get_csv_entries() {
+            let mut iris_list = match &mut results.get_mut(&entry.insee_com) {
+                Some(vec) => vec.to_vec(),
+                None => Vec::new(),
+            };
+
+            iris_list.push(entry.code_iris.to_string());
+            results.insert(entry.insee_com.to_string(), iris_list.to_vec());
         }
 
         //Remove unasigned items
