@@ -2,41 +2,59 @@ use domain::core::entry::*;
 
 impl EntryCSV {
     pub fn to_entry(&self) -> Entry {
+        let information_access = InformationAccess::new(
+            None, // ?)?
+            self.clean_and_parse_f64(&self.global_acces_region),
+            self.clean_and_parse_f64(&self.global_acces_departement),
+            None, // ?)?
+            self.clean_and_parse_f64(&self.part_des_familles_monoparentales),
+            self.clean_and_parse_f64(&self.part_des_menages_personne),
+            self.clean_and_parse_f64(&self.service_publics),
+            None, // ?)?
+        );
+
+        let numeric_interfaces_access = NumericInterfacesAccess::new(
+            None, // ?)?
+            self.clean_and_parse_f64(&self.acces_aux_interfaces_numeriques_region),
+            self.clean_and_parse_f64(&self.acces_aux_interfaces_numeriques_departement),
+            None, // ?)?
+            None,
+            None,
+            None,
+            //TODO: CHECK IF OK
+            self.clean_and_parse_f64(&self.cm_revenue_median_epci),
+        );
+
         Entry::new(
-            information_access: Some(InformationAccess::new(
-                None, // ?)?
-                Some(self.global_acces_region),
-                Some(self.global_acces_departement),
-                None, // ?)?
-                Some(self.part_des_familles_monoparentales),
-                Some(self.part_des_menages_personne),
-                Some(self.service_publics),
-                None, // ?)?
-            )),
-            numeric_interfaces_access: Some(NumericInterfacesAccess::new(
-                None, // ?)?
-                self.acces_aux_interfaces_numeriques_region,
-                self.acces_aux_interfaces_numeriques_departement,
-                None, // ?)?
-                high_speed_internet_access_percent: Option<f64>,
-                mobile_network_availability_percent: Option<f64>,
-                percent_of_poor_people: Option<f64>,
-                available_median_salary: Option<f64>)
-            ),
-            administrative_competencies: Option<AdministrativeCompetencies>,
-            numeric_competencies: Option<NumericCompetencies>,
+            Some(information_access),
+            Some(numeric_interfaces_access),
+            //TODO:
+            None,
+            //TODO:
+            None,
         )
+    }
+    fn clean_and_parse_f64(&self, value: &String) -> Option<f64> {
+        match value.trim().is_empty() {
+            true => return None,
+            false => {
+                let cleaned_string = str::replace(&value, ",", ".");
+                Some(cleaned_string.parse::<f64>().unwrap())
+            }
+        }
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct EntryCSV {
+    #[serde(rename(deserialize = "Libcom"))]
+    pub libcom: String,
     #[serde(rename(deserialize = "Libdep"))]
-    libdep: String,
+    pub libdep: String,
     #[serde(rename(deserialize = "Libepci"))]
-    libepci: String,
+    pub libepci: String,
     #[serde(rename(deserialize = "Libreg"))]
-    libreg: String,
+    pub libreg: String,
     #[serde(rename(deserialize = "P16 Pop"))]
     p16_pop: String,
     #[serde(rename(deserialize = "SCORE GLOBAL departement 1"))]
@@ -46,7 +64,7 @@ pub struct EntryCSV {
     #[serde(rename(deserialize = "Calcul 1"))]
     calcul_1: String,
     #[serde(rename(deserialize = "Code Iris"))]
-    code_iris: String,
+    pub code_iris: String,
     #[serde(rename(deserialize = "COM"))]
     com: String,
     #[serde(rename(deserialize = "DEP"))]

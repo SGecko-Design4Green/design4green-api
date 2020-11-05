@@ -10,7 +10,10 @@ use std::io::{self, BufReader};
 use std::process;
 use thiserror::Error;
 pub mod entry_csv;
+use std::collections::HashMap;
+use std::collections::HashSet;
 use std::fs;
+use std::iter::FromIterator;
 
 //Define the possible errors
 #[derive(Error, Debug)]
@@ -34,51 +37,116 @@ pub type CSVEntryStorageResult<T> = std::result::Result<T, CSVEntryStorageError>
 
 pub struct CSVEntryStorage {
     pub path: String,
-}
-
-#[derive(Deserialize)]
-struct Record {
-    year: u16,
-    make: String,
-    model: String,
-    description: String,
+    pub entries: Option<Vec<EntryCSV>>,
 }
 
 impl CSVEntryStorage {
     pub fn new(path: String) -> Self {
-        CSVEntryStorage { path: path }
+        CSVEntryStorage {
+            path: path,
+            entries: None,
+        }
     }
 
-    pub fn get(&self) -> CSVEntryStorageResult<Vec<Entry>> {
-        println!("LOAD LINES");
+    pub fn load(&mut self) -> CSVEntryStorageResult<()> {
+        let mut entries = Vec::new();
 
-        //println!("{:?}", input_line);
         let file = fs::read(&self.path).unwrap();
-
         let mut rdr = csv::ReaderBuilder::new()
             .delimiter(b';')
             .from_reader(&*file);
 
         for result in rdr.deserialize() {
-            // Notice that we need to provide a type hint for automatic
-            // deserialization.
             let record: EntryCSV = result?;
+            entries.push(record);
             //println!("{:#?}", record);
         }
-        println!("DONE");
-        Err(CSVEntryStorageError::AnotherError)
+
+        self.entries = Some(entries);
+        Ok(())
     }
-}
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    #[test]
-    fn it_works() {
-        let storage = CSVEntryStorage::new(
-            "D:\\DEV\\GIT_PROJECTS\\design4green-api\\resources\\dataset_ARRAS.csv".to_string(),
-        );
+    pub fn get_entries(&self) -> Vec<Entry> {
+        self.get_csv_entries()
+            .iter()
+            .map(|csv_entry| csv_entry.to_entry())
+            .collect()
+    }
 
-        storage.get();
+    pub fn get_departments(&self) -> HashSet<String> {
+        let all_dep: Vec<String> = self
+            .get_csv_entries()
+            .iter()
+            .map(|csv_entry| csv_entry.libdep.to_owned())
+            .collect();
+
+        std::collections::HashSet::from_iter(all_dep)
+    }
+
+    pub fn get_regions(&self) -> HashSet<String> {
+        let all_reg: Vec<String> = self
+            .get_csv_entries()
+            .iter()
+            .map(|csv_entry| csv_entry.libreg.to_owned())
+            .collect();
+
+        std::collections::HashSet::from_iter(all_reg)
+    }
+
+    pub fn get_regions_with_iris(&self) -> HashMap<String, Vec<String>> {
+        let mut results: HashMap<String, Vec<String>> = HashMap::new();
+        let regions = self.get_regions();
+
+        for region in regions {
+            results.insert(
+                region.clone(),
+                self.get_csv_entries()
+                    .iter()
+                    .filter_map(|csv_entry| match &csv_entry.libreg == &region {
+                        true => Some(csv_entry.code_iris.clone()),
+                        false => None,
+                    })
+                    .collect(),
+            );
+        }
+
+        results
+    }
+
+    pub fn get_departements_with_iris(&self) -> HashMap<String, Vec<String>> {
+        let mut results: HashMap<String, Vec<String>> = HashMap::new();
+        let departements = self.get_departments();
+
+        for departement in departements {
+            results.insert(
+                departement.clone(),
+                self.get_csv_entries()
+                    .iter()
+                    .filter_map(|csv_entry| match &csv_entry.libdep == &departement {
+                        true => Some(csv_entry.code_iris.clone()),
+                        false => None,
+                    })
+                    .collect(),
+            );
+        }
+
+        results
+    }
+
+    pub fn get_coms(&self) -> HashSet<String> {
+        let all_com: Vec<String> = self
+            .get_csv_entries()
+            .iter()
+            .map(|csv_entry| csv_entry.libcom.to_owned())
+            .collect();
+
+        std::collections::HashSet::from_iter(all_com)
+    }
+
+    pub fn get_csv_entries(&self) -> Vec<EntryCSV> {
+        match &self.entries {
+            Some(entries) => entries.to_vec(),
+            None => Vec::new(),
+        }
     }
 }
