@@ -1,12 +1,27 @@
 use domain::core::entry::*;
+use crate::AvgStat;
+use std::collections::BTreeMap;
 
 impl EntryCSV {
-    pub fn to_entry(&self) -> Entry {
+    fn concat_name(&self, code: String, name: String) -> String {
+        match name.trim().is_empty() {
+            false => format!("{} - {}", code, name),
+            true => "".to_string(),
+        }
+    }
+
+    pub fn to_entry(&self, nationalStats: AvgStat, regionsStats: BTreeMap<String, AvgStat>, departmentsStats: BTreeMap<String, AvgStat>) -> Entry {
+        let regionStat = regionsStats
+            .get(&self.nom_reg)
+            .unwrap();
+        let departmentStat = departmentsStats
+            .get(&self.concat_name(self.dep.to_string(), self.nom_dep.to_string()))
+            .unwrap();
         let information_access = InformationAccess::new(
             self.clean_and_parse_f64(&self.global_acces_region_1),
-            None,
-            None,
-            None, // ?)?
+            Some(regionStat.avg_entries_information_access as f64),
+            Some(departmentStat.avg_entries_information_access as f64),
+            Some(nationalStats.avg_entries_information_access as f64),
             self.clean_and_parse_f64(&self.part_des_familles_monoparentales),
             self.clean_and_parse_f64(&self.part_des_menages_personne),
             self.clean_and_parse_f64(&self.service_publics),
@@ -15,9 +30,9 @@ impl EntryCSV {
 
         let numeric_interfaces_access = NumericInterfacesAccess::new(
             self.clean_and_parse_f64(&self.acces_aux_interfaces_numeriques_region_1),
-            None, // ?)?
-            None,
-            None, // ?)?
+            Some(regionStat.avg_entries_numeric_interface_access as f64),
+            Some(departmentStat.avg_entries_numeric_interface_access as f64),
+            Some(nationalStats.avg_entries_numeric_interface_access as f64),
             match &self.taux_couv_hd_thd_1 {
                 Some(taux) => self.clean_and_parse_f64(taux),
                 None => None
@@ -35,9 +50,9 @@ impl EntryCSV {
 
         let administrative_competencies = AdministrativeCompetencies::new(
             self.clean_and_parse_f64(&self.competences_administatives_region_1),
-            None,
-            None,
-            None,
+            Some(regionStat.avg_entries_administrative_competencies as f64),
+            Some(departmentStat.avg_entries_administrative_competencies as f64),
+            Some(nationalStats.avg_entries_administrative_competencies as f64),
             match &self.part_chomeurs {
                 Some(part) => self.clean_and_parse_f32(part),
                 None => None
@@ -47,18 +62,18 @@ impl EntryCSV {
 
         let numeric_competencies = NumericCompetencies::new(
             self.clean_and_parse_f64(&self.competences_numeriques_scolaires_region_1),
-            None,
-            None,
-            None,
+            Some(regionStat.avg_entries_numeric_competencies as f64),
+            Some(departmentStat.avg_entries_numeric_competencies as f64),
+            Some(nationalStats.avg_entries_numeric_competencies as f64),
             self.clean_and_parse_f32(&self.part_des_personnes_agees_de_65_ans_plus),
             self.clean_and_parse_f32(&self.part_des_non_peu_diplomes_population_non_scolarisee_15_ans_plus),
         );
 
         Entry::new(
             self.clean_and_parse_f64(&self.score_global_region_star),
-            None,
-            None,
-            None,
+            Some(regionStat.avg_entries_global_score as f64),
+            Some(departmentStat.avg_entries_global_score as f64),
+            Some(nationalStats.avg_entries_global_score as f64),
             Some(self.iris.to_owned()),
             Some(information_access),
             Some(numeric_interfaces_access),
@@ -66,7 +81,7 @@ impl EntryCSV {
             Some(numeric_competencies),
         )
     }
-    fn clean_and_parse_f64(&self, value: &String) -> Option<f64> {
+    pub fn clean_and_parse_f64(&self, value: &String) -> Option<f64> {
         match value.trim().is_empty() {
             true => return None,
             false => {
@@ -75,7 +90,7 @@ impl EntryCSV {
             }
         }
     }
-    fn clean_and_parse_f32(&self, value: &String) -> Option<f32> {
+    pub fn clean_and_parse_f32(&self, value: &String) -> Option<f32> {
         match value.trim().is_empty() {
             true => return None,
             false => {
@@ -171,7 +186,7 @@ pub struct EntryCSV {
     #[serde(rename(deserialize = "ACCES A L'INFORMATION region * "))]
     acces_information_region_star: String,
     #[serde(rename(deserialize = "ACCES A L'INFORMATION region 1"))]
-    acces_information_region_1: String,
+    pub acces_information_region_1: String,
     #[serde(rename(deserialize = "ACCÈS AUX INTERFACES NUMERIQUES departement"))]
     acces_aux_interfaces_numeriques_departement: String,
     #[serde(rename(deserialize = "ACCÈS AUX INTERFACES NUMERIQUES departement *  "))]
@@ -189,7 +204,7 @@ pub struct EntryCSV {
     #[serde(rename(deserialize = "ACCÈS AUX INTERFACES NUMERIQUES region *  "))]
     acces_aux_interfaces_numeriques_region_star: String,
     #[serde(rename(deserialize = "ACCÈS AUX INTERFACES NUMERIQUES region 1"))]
-    acces_aux_interfaces_numeriques_region_1: String,
+    pub acces_aux_interfaces_numeriques_region_1: String,
     #[serde(rename(deserialize = "C16 Fam"))]
     c_16_fam: String,
     #[serde(rename(deserialize = "C16 Fammono"))]
@@ -251,7 +266,7 @@ pub struct EntryCSV {
     #[serde(rename(deserialize = "COMPETENCES ADMINISTATIVES region * "))]
     competences_administatives_region_star: String,
     #[serde(rename(deserialize = "COMPETENCES ADMINISTATIVES region 1"))]
-    competences_administatives_region_1: String,
+    pub competences_administatives_region_1: String,
     #[serde(rename(deserialize = "COMPÉTENCES NUMÉRIQUES / SCOLAIRES departement"))]
     competences_numeriques_scolaires_departement: String,
     #[serde(rename(deserialize = "COMPÉTENCES NUMÉRIQUES / SCOLAIRES departement * "))]
@@ -269,7 +284,7 @@ pub struct EntryCSV {
     #[serde(rename(deserialize = "COMPÉTENCES NUMÉRIQUES / SCOLAIRES region * "))]
     competences_numeriques_scolaires_region_star: String,
     #[serde(rename(deserialize = "COMPÉTENCES NUMÉRIQUES / SCOLAIRES region 1"))]
-    competences_numeriques_scolaires_region_1: String,
+    pub competences_numeriques_scolaires_region_1: String,
     #[serde(rename(deserialize = "Dec Med15"))]
     dec_med_15: String,
     #[serde(rename(deserialize = "F27"))]
@@ -355,7 +370,7 @@ pub struct EntryCSV {
     #[serde(rename(deserialize = "SCORE GLOBAL region"))]
     score_global_region: String,
     #[serde(rename(deserialize = "SCORE GLOBAL region * "))]
-    score_global_region_star: String,
+    pub score_global_region_star: String,
     #[serde(rename(deserialize = "SEUILS Part des familles departement"))]
     seuils_part_des_familles_departement: String,
     #[serde(rename(deserialize = "SEUILS Part des familles EPCI"))]

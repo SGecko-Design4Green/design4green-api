@@ -39,6 +39,14 @@ pub struct CSVEntryStorage {
     pub entries: Option<Vec<EntryCSV>>,
 }
 
+pub struct AvgStat {
+    avg_entries_global_score: f32,
+    avg_entries_numeric_competencies: f32,
+    avg_entries_administrative_competencies: f32,
+    avg_entries_numeric_interface_access: f32,
+    avg_entries_information_access: f32,
+}
+
 impl CSVEntryStorage {
     pub fn new(path: String) -> Self {
         CSVEntryStorage {
@@ -68,10 +76,64 @@ impl CSVEntryStorage {
         }
     }
 
+    fn get_stats(&self, csv_entries: Vec<EntryCSV>) -> AvgStat {
+        let number_of_entries: f32 = csv_entries.len() as f32;
+        let sum_entries_global_score: f32 = csv_entries
+            .iter()
+                .map(|csv_entry|
+                    csv_entry.clean_and_parse_f32(&csv_entry.score_global_region_star)
+                        .unwrap()).sum();
+        let sum_entries_numeric_competencies: f32 = csv_entries
+            .iter()
+                .map(|csv_entry|
+                    csv_entry.clean_and_parse_f32(&csv_entry.competences_numeriques_scolaires_region_1)
+                        .unwrap()).sum();
+        let sum_entries_administrative_competencies: f32 = csv_entries
+            .iter()
+                .map(|csv_entry|
+                    csv_entry.clean_and_parse_f32(&csv_entry.competences_administatives_region_1)
+                        .unwrap()).sum();
+        let sum_entries_numeric_interface_access: f32 = csv_entries
+            .iter()
+                .map(|csv_entry|
+                    csv_entry.clean_and_parse_f32(&csv_entry.acces_aux_interfaces_numeriques_region_1)
+                        .unwrap()).sum();
+        let sum_entries_information_access: f32 = csv_entries
+            .iter()
+                .map(|csv_entry|
+                    csv_entry.clean_and_parse_f32(&csv_entry.acces_information_region_1)
+                        .unwrap()).sum();
+
+        AvgStat {
+            avg_entries_global_score: sum_entries_global_score / number_of_entries,
+            avg_entries_numeric_competencies: sum_entries_numeric_competencies / number_of_entries,
+            avg_entries_administrative_competencies: sum_entries_administrative_competencies / number_of_entries,
+            avg_entries_numeric_interface_access: sum_entries_numeric_interface_access / number_of_entries,
+            avg_entries_information_access: sum_entries_information_access / number_of_entries,
+        }
+    }
+
     pub fn get_entries(&self) -> Vec<Entry> {
+        let nationalStats = self.get_stats(self.get_csv_entries());
+        let mut regionsStats: BTreeMap<String, AvgStat> = BTreeMap::new();
+        for region in self.get_regions() {
+            regionsStats
+                .insert(region,
+                        self.get_stats(self.get_csv_entries()
+                            .iter().filter(|entry_csv| entry_csv.nom_reg == region).collect()))
+        }
+
+        let mut departmentsStats: BTreeMap<String, AvgStat> = BTreeMap::new();
+        for department in self.get_departments() {
+            departmentsStats
+                .insert(department,
+                        self.get_stats(self.get_csv_entries()
+                            .iter().filter(|entry_csv| department == self.concat_name(csv_entry.dep.to_owned(), csv_entry.nom_dep.to_owned())).collect()))
+        }
+
         self.get_csv_entries()
             .iter()
-            .map(|csv_entry| csv_entry.to_entry())
+            .map(|csv_entry| csv_entry.to_entry(nationalStats, regionsStats, departmentsStats))
             .collect()
     }
 
