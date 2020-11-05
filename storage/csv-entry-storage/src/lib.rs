@@ -67,6 +67,7 @@ impl CSVEntryStorage {
             entries.push(record);
         }
         self.entries = Some(entries);
+        
         Ok(())
     }
 

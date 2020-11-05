@@ -50,6 +50,9 @@ async fn main() -> io::Result<()> {
                     .route("/regions", web::get().to(get_regions))
                     .route("/departments", web::get().to(get_departments))
                     .route("/index/national", web::get().to(get_national_index))
+                    .route("/index/regional/{region}", web::get().to(get_regional_index))
+                    .route("/index/departmental/{dept}", web::get().to(get_departmental_index))
+                    .route("/index/districts/{iriscode}", web::get().to(get_district_index))
                     .route("/index", web::get().to(entries_get_all)),
             )
             //STATIC CONF

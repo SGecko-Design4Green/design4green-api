@@ -52,9 +52,38 @@ impl EntryDomainTrait for EntryDomain {
     }
 
     fn get_regional_index(&self, region: String) -> EntryDomainResult<Entry> {
-        match self.entry_datastore.get_region_entry(region).unwrap() {
+        let iris_code = match self.idx_regions.get_index(region).unwrap() {
+            Some(codes) => {
+                Ok(codes.first().unwrap().clone())
+            },
+            None => Err(EntryDomainError::NotFoundError)
+        };
+
+        match self.entry_datastore.get_region_entry(iris_code?.to_string()).unwrap() {
             Some(regional_entry) => Ok(regional_entry),
             None => Err(EntryDomainError::NotFoundError)
         }
     }
+
+    fn get_departmental_index(&self, department: String) -> EntryDomainResult<Entry> {
+        let iris_code = match self.idx_departments.get_index(department).unwrap() {
+            Some(codes) => {
+                Ok(codes.first().unwrap().clone())
+            },
+            None => Err(EntryDomainError::NotFoundError)
+        };
+
+        match self.entry_datastore.get_department_entry(iris_code?.to_string()).unwrap() {
+            Some(departmental_entry) => Ok(departmental_entry),
+            None => Err(EntryDomainError::NotFoundError)
+        }
+    }
+
+    fn get_district_index(&self, iriscode: String) -> EntryDomainResult<Entry> {
+        match self.entry_datastore.get_district_entry(iriscode).unwrap() {
+            Some(district_entry) => Ok(district_entry),
+            None => Err(EntryDomainError::NotFoundError)
+        }
+    }
+
 }
