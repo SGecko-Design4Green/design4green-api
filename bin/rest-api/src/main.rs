@@ -57,6 +57,11 @@ async fn main() -> io::Result<()> {
                         web::get().to(get_regional_index),
                     )
                     .route(
+                        "/index/regional/{region}/in",
+                        web::get().to(get_in_regional_index),
+                    )
+                    .route("/index/regional", web::get().to(get_all_regional_index))
+                    .route(
                         "/index/departmental/{dept}",
                         web::get().to(get_departmental_index),
                     )

@@ -6,11 +6,13 @@ use crate::core::entry::{
 };
 use crate::storage::traits::{EntryStorageTrait, IndexStoragePostalTrait, IndexStorageTrait};
 use std::boxed::Box;
+use std::collections::HashMap;
 
 pub struct EntryDomain {
     pub idx_regions: Box<dyn IndexStorageTrait>,
     pub idx_departments: Box<dyn IndexStorageTrait>,
     pub idx_cities: Box<dyn IndexStoragePostalTrait>,
+    pub idx_departments_by_region: Box<dyn IndexStorageTrait>,
     pub idx_insee_coms: Box<dyn IndexStorageTrait>,
     pub entry_datastore: Box<dyn EntryStorageTrait>,
 }
@@ -21,14 +23,16 @@ impl EntryDomain {
         idx_departments: Box<dyn IndexStorageTrait>,
         idx_cities: Box<dyn IndexStoragePostalTrait>,
         idx_insee_coms: Box<dyn IndexStorageTrait>,
+        idx_departments_by_region: Box<dyn IndexStorageTrait>,
         entry_datastore: Box<dyn EntryStorageTrait>,
     ) -> Self {
         EntryDomain {
             idx_regions,
             idx_departments,
             idx_cities,
-            entry_datastore,
             idx_insee_coms,
+            idx_departments_by_region,
+            entry_datastore
         }
     }
 }
@@ -68,8 +72,10 @@ impl EntryDomainTrait for EntryDomain {
 
     fn get_regional_index(&self, region: String) -> EntryDomainResult<Entry> {
         let iris_code = match self.idx_regions.get_index(region).unwrap() {
-            Some(codes) => Ok(codes.first().unwrap().clone()),
-            None => Err(EntryDomainError::NotFoundError),
+            Some(codes) => {
+                Ok(codes.first().unwrap().clone())
+            },
+            None => Err(EntryDomainError::NotFoundError)
         };
 
         match self
@@ -82,10 +88,41 @@ impl EntryDomainTrait for EntryDomain {
         }
     }
 
+    fn get_in_regional_index(&self, region: String) -> EntryDomainResult<HashMap<String, Entry>> {
+        let depts = match self.idx_departments_by_region.get_index(region) {
+            Ok(option_dept) => match option_dept {
+                Some(depts) => depts,
+                None => Vec::new()
+            }
+            Err(_) => Vec::new()
+        };
+        let mut res: HashMap<String, Entry> = HashMap::new();
+        for dept in depts {
+            res.insert(dept.to_string(), self.get_departmental_index(dept.to_string()).unwrap());
+        };
+
+        Ok(res)
+    }
+
+    fn get_all_regions_index(&self) -> EntryDomainResult<HashMap<String, Entry>> {
+        let regions = match self.idx_departments_by_region.get_all_keys() {
+            Ok(regs) => regs,
+            Err(_) => Vec::new()
+        };
+        let mut res: HashMap<String, Entry> = HashMap::new();
+        for region in regions {
+            res.insert(region.to_string(), self.get_regional_index(region.to_string()).unwrap());
+        };
+
+        Ok(res)
+    }
+
     fn get_departmental_index(&self, department: String) -> EntryDomainResult<Entry> {
         let iris_code = match self.idx_departments.get_index(department).unwrap() {
-            Some(codes) => Ok(codes.first().unwrap().clone()),
-            None => Err(EntryDomainError::NotFoundError),
+            Some(codes) => {
+                Ok(codes.first().unwrap().clone())
+            },
+            None => Err(EntryDomainError::NotFoundError)
         };
 
         match self
@@ -102,10 +139,12 @@ impl EntryDomainTrait for EntryDomain {
         println!("get city {:?}", code_insee);
         let iris_codes_res = match self.idx_insee_coms.get_index(code_insee) {
             Ok(optional_code) => match optional_code {
-                Some(codes) => Ok(codes.clone()),
-                None => Err(EntryDomainError::NotFoundError),
-            },
-            Err(_) => Err(EntryDomainError::NotFoundError),
+                Some(codes) => {
+                    Ok(codes.clone())
+                },
+                None => Err(EntryDomainError::NotFoundError)
+            }
+            Err(_) => Err(EntryDomainError::NotFoundError)
         };
 
         match iris_codes_res {

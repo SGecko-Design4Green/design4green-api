@@ -1,5 +1,6 @@
 use crate::business::error::EntryDomainResult;
 use crate::core::entry::*;
+use std::collections::HashMap;
 
 pub trait EntryDomainTrait: Sync + Send {
     fn get_all(&self) -> EntryDomainResult<Vec<Entry>>;
@@ -9,7 +10,9 @@ pub trait EntryDomainTrait: Sync + Send {
     fn search_cities(&self, department: String, query: String) -> EntryDomainResult<Vec<String>>;
     fn get_national_index(&self) -> EntryDomainResult<Entry>;
     fn get_regional_index(&self, region: String) -> EntryDomainResult<Entry>;
+    fn get_in_regional_index(&self, region: String) -> EntryDomainResult<HashMap<String, Entry>>;
     fn get_departmental_index(&self, department: String) -> EntryDomainResult<Entry>;
     fn get_city_index(&self, code_insee: String) -> EntryDomainResult<Entry>;
+    fn get_all_regions_index(&self) -> EntryDomainResult<HashMap<String, Entry>>;
     fn get_district_index(&self, iriscode: String) -> EntryDomainResult<Entry>;
 }
