@@ -39,6 +39,7 @@ impl IndexStorageTrait for MemoryIndexStorage {
             None => self.index.range("0".to_string()..),
         };
 
+        let query = query.to_uppercase();
         for (key, _) in index {
             if key.contains(&query) {
                 results.push(key.to_string());
