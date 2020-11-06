@@ -35,3 +35,6 @@ domain = { path = "../../domain" }
 ##Memory storage
 memory-index-storage = { path = "../../storage/memory-index-storage" }
 sled-db-entry-storage = { path = "../../storage/sled-db-entry-storage" }
+
+##URLDECODE
+urlencoding = "1.1.1"

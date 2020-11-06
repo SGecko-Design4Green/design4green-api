@@ -2,6 +2,13 @@ use crate::state::AppState;
 use actix_web::web::Data;
 use actix_web::{web, HttpRequest, HttpResponse};
 use std::sync::{Arc, Mutex};
+use urlencoding::decode;
+
+#[derive(Deserialize)]
+pub struct SearchQuery {
+    department: Option<String>,
+    q: Option<String>,
+}
 
 pub fn healthcheck(_req: HttpRequest) -> HttpResponse {
     HttpResponse::Ok().body("Everything's fine.")
@@ -51,18 +58,22 @@ pub fn get_cities(wrap_state: Data<Arc<Mutex<AppState>>>, _req: HttpRequest) -> 
     }
 }
 
-pub fn search_cities(wrap_state: Data<Arc<Mutex<AppState>>>, req: HttpRequest) -> HttpResponse {
+pub fn search_cities(
+    wrap_state: Data<Arc<Mutex<AppState>>>,
+    req: HttpRequest,
+    query: web::Query<SearchQuery>,
+) -> HttpResponse {
     let state = wrap_state.lock().unwrap();
     let domain = state.get_domain();
 
-    let dep = match req.match_info().get("department") {
+    let dep = match &query.department {
         Some(dep) => dep,
         None => {
             return HttpResponse::BadRequest().body("Cannot search without 'department' parameter")
         }
     };
 
-    let query = match req.match_info().get("q") {
+    let query = match &query.q {
         Some(query) => query,
         None => {
             return HttpResponse::BadRequest().body("Cannot search without query 'q' parameter")
