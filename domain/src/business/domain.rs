@@ -46,6 +46,10 @@ impl EntryDomainTrait for EntryDomain {
         Ok(self.idx_departments.get_all_keys().unwrap())
     }
 
+    fn get_cities(&self) -> EntryDomainResult<Vec<String>> {
+        Ok(self.idx_cities.get_all_keys().unwrap())
+    }
+
     fn search_cities(&self, department: String, query: String) -> EntryDomainResult<Vec<String>> {
         //  BY REGION AND QUERY
         self.idx_cities

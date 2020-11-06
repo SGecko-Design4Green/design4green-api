@@ -41,6 +41,16 @@ pub fn get_departments(wrap_state: Data<Arc<Mutex<AppState>>>, _req: HttpRequest
     }
 }
 
+pub fn get_cities(wrap_state: Data<Arc<Mutex<AppState>>>, _req: HttpRequest) -> HttpResponse {
+    let state = wrap_state.lock().unwrap();
+    let domain = state.get_domain();
+
+    match domain.get_cities() {
+        Ok(entries) => HttpResponse::Ok().json(entries),
+        Err(_) => HttpResponse::InternalServerError().body("Error with backend."),
+    }
+}
+
 pub fn get_national_index(
     wrap_state: Data<Arc<Mutex<AppState>>>,
     _req: HttpRequest,
@@ -101,10 +111,7 @@ pub fn get_district_index(
     }
 }
 
-pub fn get_city_index(
-    wrap_state: Data<Arc<Mutex<AppState>>>,
-    req: HttpRequest,
-) -> HttpResponse {
+pub fn get_city_index(wrap_state: Data<Arc<Mutex<AppState>>>, req: HttpRequest) -> HttpResponse {
     let state = wrap_state.lock().unwrap();
     let domain = state.get_domain();
 
@@ -116,4 +123,3 @@ pub fn get_city_index(
         None => HttpResponse::BadRequest().body("No region was given."),
     }
 }
-
