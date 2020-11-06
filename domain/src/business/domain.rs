@@ -3,8 +3,7 @@ use crate::business::traits::EntryDomainTrait;
 use crate::core::entry::*;
 use crate::storage::traits::{EntryStorageTrait, IndexStoragePostalTrait, IndexStorageTrait};
 use std::boxed::Box;
-use std::collections::BTreeMap;
-use std::collections::HashMap;
+use std::collections::{HashMap, BTreeMap};
 
 pub struct EntryDomain {
     pub idx_regions: Box<dyn IndexStorageTrait>,
@@ -160,18 +159,22 @@ impl EntryDomainTrait for EntryDomain {
         Ok(res)
     }
 
-    fn get_in_departmental_index(&self, department: String, page: i32) -> EntryDomainResult<HashMap<String, Entry>> {
+    fn get_in_departmental_index(&self, department: String, page: i32) -> EntryDomainResult<BTreeMap<String, Entry>> {
         let cities_result = self.search_cities(department, "".to_string());
         let cities = match cities_result {
-            Some(cities) => cities,
-            None => Vec::new()
+            Ok(cities) => cities,
+            Err(_) => BTreeMap::new()
         };
 
-        let cities_chunk = cities.range((page - 1) * 5..page * 5) as HashMap<String, CityDetail>;
-        let mut deptCities: HashMap<String, Entry> = HashMap::new();
-        for city in cities_chunk.iter() {
-            deptCities.insert(city.0.to_string(), self.get_city_index(city.1.code_insee.unwrap()).unwrap());
-        };
+        let cities_keys: Vec<String> = cities.keys().cloned().collect();
+        let start: usize = ((page - 1) * 5) as usize;
+        let end: usize = (page * 5) as usize;
+        let chunk_keys = &cities_keys[start..end];
+        let mut deptCities: BTreeMap<String, Entry> = BTreeMap::new();
+        for city in chunk_keys {
+            let code_insee = &cities.get(&city.to_string()).unwrap().code_insee.clone().unwrap();
+            deptCities.insert(city.to_string(), self.get_city_index(code_insee.to_string()).unwrap());
+        }
 
         Ok(deptCities)
     }
@@ -190,6 +193,24 @@ impl EntryDomainTrait for EntryDomain {
             Some(departmental_entry) => Ok(departmental_entry),
             None => Err(EntryDomainError::NotFoundError),
         }
+    }
+
+    fn get_city_districts_index(&self, code_insee: String) -> EntryDomainResult<HashMap<String, Entry>> {
+        let iris_codes_res = match self.idx_insee_coms.get_index(code_insee) {
+            Ok(optional_code) => match optional_code {
+                Some(codes) => codes.clone(),
+                None => Vec::new(),
+            },
+            Err(_) => Vec::new(),
+        };
+
+        let mut districts: HashMap<String, Entry> = HashMap::new();
+
+        for iris_code in iris_codes_res {
+            districts.insert(iris_code.to_string(), self.entry_datastore.get_entry(iris_code.to_string()).unwrap().unwrap());
+        };
+
+        Ok(districts)
     }
 
     fn get_city_index(&self, code_insee: String) -> EntryDomainResult<Entry> {

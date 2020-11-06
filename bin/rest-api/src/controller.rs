@@ -1,5 +1,3 @@
-#[macro_use]
-extern crate serde_derive;
 use crate::state::AppState;
 use actix_web::web::{Data, Query};
 use actix_web::{web, HttpRequest, HttpResponse};
@@ -207,6 +205,22 @@ pub fn get_in_departmental_index(
         Some(dept) => match domain.get_in_departmental_index(dept.to_string(), query.page) {
                 Ok(entry) => HttpResponse::Ok().json(entry),
                 Err(_) => HttpResponse::InternalServerError().body("Error with backend."),
+        },
+        None => HttpResponse::BadRequest().body("No region was given."),
+    }
+}
+
+pub fn get_city_districts_index(
+    wrap_state: Data<Arc<Mutex<AppState>>>,
+    req: HttpRequest
+) -> HttpResponse {
+    let state = wrap_state.lock().unwrap();
+    let domain = state.get_domain();
+
+    match req.match_info().get("code_insee") {
+        Some(code_insee) => match domain.get_city_districts_index(code_insee.to_string()) {
+            Ok(entry) => HttpResponse::Ok().json(entry),
+            Err(_) => HttpResponse::InternalServerError().body("Error with backend."),
         },
         None => HttpResponse::BadRequest().body("No region was given."),
     }

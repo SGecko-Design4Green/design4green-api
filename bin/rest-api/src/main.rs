@@ -70,6 +70,7 @@ async fn main() -> io::Result<()> {
                     )
                     .route("/index/departmental/{dept}/in", web::get().to(get_in_departmental_index))
                     .route("/index/city/{code_insee}", web::get().to(get_city_index))
+                    .route("/index/city/{code_insee}/districts", web::get().to(get_city_districts_index))
                     .route(
                         "/index/districts/{iriscode}",
                         web::get().to(get_district_index),
