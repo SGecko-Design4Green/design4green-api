@@ -57,7 +57,7 @@ impl EntryDomainTrait for EntryDomain {
         query: String,
     ) -> EntryDomainResult<BTreeMap<String, CityDetail>> {
         let mut results: BTreeMap<String, CityDetail> = BTreeMap::new();
-        let mut cities = self
+        let cities = self
             .idx_cities
             .search_on_key(query, Some(department))
             .unwrap();
@@ -174,7 +174,7 @@ impl EntryDomainTrait for EntryDomain {
         let start: usize = ((page - 1) * 5) as usize;
         let end: usize = (page * 5) as usize;
         let chunk_keys = &cities_keys[start..end];
-        let mut deptCities: BTreeMap<String, Entry> = BTreeMap::new();
+        let mut dept_cities: BTreeMap<String, Entry> = BTreeMap::new();
         for city in chunk_keys {
             let code_insee = &cities
                 .get(&city.to_string())
@@ -183,13 +183,13 @@ impl EntryDomainTrait for EntryDomain {
                 .clone()
                 .unwrap();
             println!("HERE >>> {:?}", code_insee);
-            deptCities.insert(
+            dept_cities.insert(
                 city.to_string(),
                 self.get_city_index(code_insee.to_string()).unwrap(),
             );
         }
 
-        Ok(deptCities)
+        Ok(dept_cities)
     }
 
     fn get_departmental_index(&self, department: String) -> EntryDomainResult<Entry> {
@@ -245,8 +245,7 @@ impl EntryDomainTrait for EntryDomain {
             Err(_) => Vec::new(),
         };
 
-
-        let mut cityEntries: Vec<Entry> = Vec::new();
+        let mut city_entries: Vec<Entry> = Vec::new();
         for iris_code in iris_codes.iter() {
             match self
                 .entry_datastore
@@ -254,21 +253,20 @@ impl EntryDomainTrait for EntryDomain {
                 .unwrap()
             {
                 Some(neighbor_entry) => {
-                    cityEntries.push(neighbor_entry);
+                    city_entries.push(neighbor_entry);
                 }
                 None => {}
             };
         }
 
-        let num_of_neighbors = cityEntries.len() as f64;
+        let num_of_neighbors = city_entries.len() as f64;
         println!("{:?} neighbors", num_of_neighbors);
-        let sum_of_global: f64 =
-            cityEntries.iter().map(|entry| entry.global.unwrap()).sum();
-        let sum_of_global_numeric_competencies: f64 = cityEntries
+        let sum_of_global: f64 = city_entries.iter().map(|entry| entry.global.unwrap()).sum();
+        let sum_of_global_numeric_competencies: f64 = city_entries
             .iter()
             .map(|entry| entry.numeric_competencies.clone().unwrap().global.unwrap())
             .sum();
-        let sum_of_global_administrative_competencies: f64 = cityEntries
+        let sum_of_global_administrative_competencies: f64 = city_entries
             .iter()
             .map(|entry| {
                 entry
@@ -279,7 +277,7 @@ impl EntryDomainTrait for EntryDomain {
                     .unwrap()
             })
             .sum();
-        let sum_of_global_numeric_interfaces_access: f64 = cityEntries
+        let sum_of_global_numeric_interfaces_access: f64 = city_entries
             .iter()
             .map(|entry| {
                 entry
@@ -290,37 +288,26 @@ impl EntryDomainTrait for EntryDomain {
                     .unwrap()
             })
             .sum();
-        let sum_of_global_information_access: f64 = cityEntries
+        let sum_of_global_information_access: f64 = city_entries
             .iter()
             .map(|entry| entry.information_access.clone().unwrap().global.unwrap())
             .sum();
 
         let avg_global = sum_of_global / num_of_neighbors;
-        let avg_global_numeric_competencies =
-            sum_of_global_numeric_competencies / num_of_neighbors;
+        let avg_global_numeric_competencies = sum_of_global_numeric_competencies / num_of_neighbors;
         let avg_global_administrative_competencies =
             sum_of_global_administrative_competencies / num_of_neighbors;
         let avg_global_numeric_interfaces_access =
             sum_of_global_numeric_interfaces_access / num_of_neighbors;
-        let avg_global_information_access =
-            sum_of_global_information_access / num_of_neighbors;
+        let avg_global_information_access = sum_of_global_information_access / num_of_neighbors;
 
-        if cityEntries.len() == 0 {
+        if city_entries.len() == 0 {
             return Ok(Entry::new(
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
+                None, None, None, None, None, None, None, None, None, None,
             ));
         }
 
-        let found_entry = cityEntries.get(0).unwrap();
+        let found_entry = city_entries.get(0).unwrap();
 
         Ok(Entry::new(
             Some(avg_global),

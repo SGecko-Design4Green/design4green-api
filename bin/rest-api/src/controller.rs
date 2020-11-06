@@ -1,8 +1,7 @@
 use crate::state::AppState;
-use actix_web::web::{Data, Query};
+use actix_web::web::Data;
 use actix_web::{web, HttpRequest, HttpResponse};
 use std::sync::{Arc, Mutex};
-use urlencoding::decode;
 
 #[derive(Deserialize)]
 pub struct SearchQuery {
@@ -20,7 +19,7 @@ pub fn unimplemented(_req: HttpRequest) -> HttpResponse {
 
 #[derive(Deserialize)]
 pub struct PageParam {
-    page: i32
+    page: i32,
 }
 
 pub fn entries_get_all(wrap_state: Data<Arc<Mutex<AppState>>>, _req: HttpRequest) -> HttpResponse {
@@ -65,7 +64,7 @@ pub fn get_cities(wrap_state: Data<Arc<Mutex<AppState>>>, _req: HttpRequest) -> 
 
 pub fn search_cities(
     wrap_state: Data<Arc<Mutex<AppState>>>,
-    req: HttpRequest,
+    _req: HttpRequest,
     query: web::Query<SearchQuery>,
 ) -> HttpResponse {
     let state = wrap_state.lock().unwrap();
@@ -196,15 +195,15 @@ pub fn get_all_regional_index(
 pub fn get_in_departmental_index(
     wrap_state: Data<Arc<Mutex<AppState>>>,
     req: HttpRequest,
-    query: web::Query<PageParam>
+    query: web::Query<PageParam>,
 ) -> HttpResponse {
     let state = wrap_state.lock().unwrap();
     let domain = state.get_domain();
 
     match req.match_info().get("dept") {
         Some(dept) => match domain.get_in_departmental_index(dept.to_string(), query.page) {
-                Ok(entry) => HttpResponse::Ok().json(entry),
-                Err(_) => HttpResponse::InternalServerError().body("Error with backend."),
+            Ok(entry) => HttpResponse::Ok().json(entry),
+            Err(_) => HttpResponse::InternalServerError().body("Error with backend."),
         },
         None => HttpResponse::BadRequest().body("No region was given."),
     }
@@ -212,7 +211,7 @@ pub fn get_in_departmental_index(
 
 pub fn get_city_districts_index(
     wrap_state: Data<Arc<Mutex<AppState>>>,
-    req: HttpRequest
+    req: HttpRequest,
 ) -> HttpResponse {
     let state = wrap_state.lock().unwrap();
     let domain = state.get_domain();

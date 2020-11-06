@@ -9,8 +9,7 @@ use crate::configuration::Configuration;
 use crate::controller::*;
 use crate::state::AppState;
 use actix_files as fs;
-use actix_web::http::header;
-use actix_web::{middleware, web, web::Data, App, HttpServer};
+use actix_web::{middleware, web, App, HttpServer};
 use std::sync::{Arc, Mutex};
 use std::{env, io};
 
