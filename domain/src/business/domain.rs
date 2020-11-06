@@ -29,8 +29,10 @@ impl EntryDomain {
         EntryDomain {
             idx_regions,
             idx_departments,
-            entry_datastore,
-            idx_insee_coms
+            idx_cities,
+            idx_insee_coms,
+            idx_departments_by_region,
+            entry_datastore
         }
     }
 }
