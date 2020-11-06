@@ -1,4 +1,7 @@
-use domain::core::entry::{Entry, InformationAccess, NumericInterfacesAccess, AdministrativeCompetencies, NumericCompetencies};
+use domain::core::entry::{
+    AdministrativeCompetencies, Entry, InformationAccess, NumericCompetencies,
+    NumericInterfacesAccess,
+};
 use domain::storage::error::*;
 use domain::storage::traits::EntryStorageTrait;
 use serde_cbor::de::from_slice;
@@ -44,10 +47,10 @@ impl EntryStorageTrait for SledEntriesStorage {
             Ok(wrap_cbor_entry) => match wrap_cbor_entry {
                 Some(cbor) => match from_slice(&cbor) {
                     Ok(deser_value) => Ok(Some(deser_value)),
-                    Err(_) => Err(StorageError::NotImplemented)
-                }
-                None => Err(StorageError::NotImplemented)
-            }
+                    Err(_) => Err(StorageError::NotImplemented),
+                },
+                None => Err(StorageError::NotImplemented),
+            },
             Err(_) => Err(StorageError::NotImplemented),
         }
     }
@@ -60,6 +63,7 @@ impl EntryStorageTrait for SledEntriesStorage {
 
                 let national_entry = Entry::new(
                     entry.global_national,
+                    None,
                     None,
                     None,
                     None,
@@ -104,7 +108,7 @@ impl EntryStorageTrait for SledEntriesStorage {
 
                 Ok(Some(national_entry))
             }
-            Err(_) => Err(StorageError::AnotherError)
+            Err(_) => Err(StorageError::AnotherError),
         }
     }
 
@@ -123,55 +127,84 @@ impl EntryStorageTrait for SledEntriesStorage {
         }
 
         match first_region_entry {
-            Some(found_entry) => {
-                Ok(Some(Entry::new(
-                    found_entry.global_region,
+            Some(found_entry) => Ok(Some(Entry::new(
+                found_entry.global_region,
+                None,
+                None,
+                found_entry.global_national,
+                None,
+                None,
+                Some(InformationAccess::new(
+                    found_entry
+                        .information_access
+                        .clone()
+                        .unwrap()
+                        .global_region,
                     None,
                     None,
-                    found_entry.global_national,
+                    found_entry
+                        .information_access
+                        .clone()
+                        .unwrap()
+                        .global_national,
                     None,
-                    Some(InformationAccess::new(
-                        found_entry.information_access.clone().unwrap().global_region,
-                        None,
-                        None,
-                        found_entry.information_access.clone().unwrap().global_national,
-                        None,
-                        None,
-                        None,
-                        None,
-                    )),
-                    Some(NumericInterfacesAccess::new(
-                        found_entry.numeric_interfaces_access.clone().unwrap().global_region,
-                        None,
-                        None,
-                        found_entry.numeric_interfaces_access.clone().unwrap().global_national,
-                        None,
-                        None,
-                        None,
-                        None,
-                    )),
-                    Some(AdministrativeCompetencies::new(
-                        found_entry.administrative_competencies.clone().unwrap().global_region,
-                        None,
-                        None,
-                        found_entry.administrative_competencies.clone().unwrap().global_national,
-                        None,
-                        None,
-                    )),
-                    Some(NumericCompetencies::new(
-                        found_entry.numeric_competencies.clone().unwrap().global_region,
-                        None,
-                        None,
-                        found_entry.numeric_competencies.clone().unwrap().global_national,
-                        None,
-                        None,
-                    )),
-                )))
-            }
-            None => Err(StorageError::AnotherError)
+                    None,
+                    None,
+                    None,
+                )),
+                Some(NumericInterfacesAccess::new(
+                    found_entry
+                        .numeric_interfaces_access
+                        .clone()
+                        .unwrap()
+                        .global_region,
+                    None,
+                    None,
+                    found_entry
+                        .numeric_interfaces_access
+                        .clone()
+                        .unwrap()
+                        .global_national,
+                    None,
+                    None,
+                    None,
+                    None,
+                )),
+                Some(AdministrativeCompetencies::new(
+                    found_entry
+                        .administrative_competencies
+                        .clone()
+                        .unwrap()
+                        .global_region,
+                    None,
+                    None,
+                    found_entry
+                        .administrative_competencies
+                        .clone()
+                        .unwrap()
+                        .global_national,
+                    None,
+                    None,
+                )),
+                Some(NumericCompetencies::new(
+                    found_entry
+                        .numeric_competencies
+                        .clone()
+                        .unwrap()
+                        .global_region,
+                    None,
+                    None,
+                    found_entry
+                        .numeric_competencies
+                        .clone()
+                        .unwrap()
+                        .global_national,
+                    None,
+                    None,
+                )),
+            ))),
+            None => Err(StorageError::AnotherError),
         }
-
-
     }
 
     fn get_department_entry(&self, iris_code: String) -> StorageResult<Option<Entry>> {
@@ -189,54 +222,96 @@ impl EntryStorageTrait for SledEntriesStorage {
         }
 
         match first_dept_entry {
-            Some(found_entry) => {
-                Ok(Some(Entry::new(
-                    found_entry.global_dept,
-                    found_entry.global_region,
+            Some(found_entry) => Ok(Some(Entry::new(
+                found_entry.global_dept,
+                found_entry.global_region,
+                None,
+                found_entry.global_national,
+                None,
+                None,
+                Some(InformationAccess::new(
+                    found_entry.information_access.clone().unwrap().global_dept,
+                    found_entry
+                        .information_access
+                        .clone()
+                        .unwrap()
+                        .global_region,
                     None,
-                    found_entry.global_national,
+                    found_entry
+                        .information_access
+                        .clone()
+                        .unwrap()
+                        .global_national,
                     None,
-                    Some(InformationAccess::new(
-                        found_entry.information_access.clone().unwrap().global_dept,
-                        found_entry.information_access.clone().unwrap().global_region,
-                        None,
-                        found_entry.information_access.clone().unwrap().global_national,
-                        None,
-                        None,
-                        None,
-                        None,
-                    )),
-                    Some(NumericInterfacesAccess::new(
-                        found_entry.numeric_interfaces_access.clone().unwrap().global_dept,
-                        found_entry.numeric_interfaces_access.clone().unwrap().global_region,
-                        None,
-                        found_entry.numeric_interfaces_access.clone().unwrap().global_national,
-                        None,
-                        None,
-                        None,
-                        None,
-                    )),
-                    Some(AdministrativeCompetencies::new(
-                        found_entry.administrative_competencies.clone().unwrap().global_dept,
-                        found_entry.administrative_competencies.clone().unwrap().global_region,
-                        None,
-                        found_entry.administrative_competencies.clone().unwrap().global_national,
-                        None,
-                        None,
-                    )),
-                    Some(NumericCompetencies::new(
-                        found_entry.numeric_competencies.clone().unwrap().global_dept,
-                        found_entry.numeric_competencies.clone().unwrap().global_region,
-                        None,
-                        found_entry.numeric_competencies.clone().unwrap().global_national,
-                        None,
-                        None,
-                    )),
-                )))
-            }
-            None => Err(StorageError::AnotherError)
+                    None,
+                    None,
+                    None,
+                )),
+                Some(NumericInterfacesAccess::new(
+                    found_entry
+                        .numeric_interfaces_access
+                        .clone()
+                        .unwrap()
+                        .global_dept,
+                    found_entry
+                        .numeric_interfaces_access
+                        .clone()
+                        .unwrap()
+                        .global_region,
+                    None,
+                    found_entry
+                        .numeric_interfaces_access
+                        .clone()
+                        .unwrap()
+                        .global_national,
+                    None,
+                    None,
+                    None,
+                    None,
+                )),
+                Some(AdministrativeCompetencies::new(
+                    found_entry
+                        .administrative_competencies
+                        .clone()
+                        .unwrap()
+                        .global_dept,
+                    found_entry
+                        .administrative_competencies
+                        .clone()
+                        .unwrap()
+                        .global_region,
+                    None,
+                    found_entry
+                        .administrative_competencies
+                        .clone()
+                        .unwrap()
+                        .global_national,
+                    None,
+                    None,
+                )),
+                Some(NumericCompetencies::new(
+                    found_entry
+                        .numeric_competencies
+                        .clone()
+                        .unwrap()
+                        .global_dept,
+                    found_entry
+                        .numeric_competencies
+                        .clone()
+                        .unwrap()
+                        .global_region,
+                    None,
+                    found_entry
+                        .numeric_competencies
+                        .clone()
+                        .unwrap()
+                        .global_national,
+                    None,
+                    None,
+                )),
+            ))),
+            None => Err(StorageError::AnotherError),
         }
-
     }
 
     fn create(&self, iris_code: String, entry: Entry) -> StorageResult<()> {

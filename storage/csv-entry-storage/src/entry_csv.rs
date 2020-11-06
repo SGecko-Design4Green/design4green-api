@@ -1,5 +1,5 @@
-use domain::core::entry::*;
 use crate::AvgStat;
+use domain::core::entry::*;
 use std::collections::BTreeMap;
 
 impl EntryCSV {
@@ -10,10 +10,13 @@ impl EntryCSV {
         }
     }
 
-    pub fn to_entry(&self, nationalStats: &AvgStat, regionsStats: &BTreeMap<String, AvgStat>, departmentsStats: &BTreeMap<String, AvgStat>) -> Entry {
-        let regionStat = regionsStats
-            .get(&self.nom_reg)
-            .unwrap();
+    pub fn to_entry(
+        &self,
+        nationalStats: &AvgStat,
+        regionsStats: &BTreeMap<String, AvgStat>,
+        departmentsStats: &BTreeMap<String, AvgStat>,
+    ) -> Entry {
+        let regionStat = regionsStats.get(&self.nom_reg).unwrap();
         let departmentStat = departmentsStats
             .get(&self.concat_name(self.dep.to_string(), self.nom_dep.to_string()))
             .unwrap();
@@ -35,15 +38,15 @@ impl EntryCSV {
             Some(nationalStats.avg_entries_numeric_interface_access as f64),
             match &self.taux_couv_hd_thd_1 {
                 Some(taux) => self.clean_and_parse_f64(taux),
-                None => None
+                None => None,
             },
             match &self.taux_couv_mobile {
                 Some(taux) => self.clean_and_parse_f64(taux),
-                None => None
+                None => None,
             },
             match &self.taux_pauvrete {
                 Some(taux) => self.clean_and_parse_f64(taux),
-                None => None
+                None => None,
             },
             self.clean_and_parse_f64(&self.cm_revenue_median_region),
         );
@@ -55,7 +58,7 @@ impl EntryCSV {
             Some(nationalStats.avg_entries_administrative_competencies as f64),
             match &self.part_chomeurs {
                 Some(part) => self.clean_and_parse_f32(part),
-                None => None
+                None => None,
             },
             self.clean_and_parse_f32(&self.part_des_personnes_agees_de_15_29_ans),
         );
@@ -66,7 +69,9 @@ impl EntryCSV {
             Some(departmentStat.avg_entries_numeric_competencies as f64),
             Some(nationalStats.avg_entries_numeric_competencies as f64),
             self.clean_and_parse_f32(&self.part_des_personnes_agees_de_65_ans_plus),
-            self.clean_and_parse_f32(&self.part_des_non_peu_diplomes_population_non_scolarisee_15_ans_plus),
+            self.clean_and_parse_f32(
+                &self.part_des_non_peu_diplomes_population_non_scolarisee_15_ans_plus,
+            ),
         );
 
         Entry::new(
@@ -75,6 +80,7 @@ impl EntryCSV {
             Some(departmentStat.avg_entries_global_score as f64),
             Some(nationalStats.avg_entries_global_score as f64),
             Some(self.iris.to_owned()),
+            Some(self.libiris.to_owned()),
             Some(information_access),
             Some(numeric_interfaces_access),
             Some(administrative_competencies),
@@ -348,7 +354,7 @@ pub struct EntryCSV {
     #[serde(rename(deserialize = "Part des ménages d'une personne"))]
     part_des_menages_personne: String,
     #[serde(rename(
-    deserialize = "Part des non ou peu diplômés dans la population non scolarisée de 15 ans ou plus"
+        deserialize = "Part des non ou peu diplômés dans la population non scolarisée de 15 ans ou plus"
     ))]
     part_des_non_peu_diplomes_population_non_scolarisee_15_ans_plus: String,
     #[serde(rename(deserialize = "Part des personnes âgées de 15 – 29 ans"))]

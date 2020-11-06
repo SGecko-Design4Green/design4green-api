@@ -76,7 +76,12 @@ impl EntryDomainTrait for EntryDomain {
                         .get_index(iris_code.to_string())?
                         .unwrap_or(Vec::new())
                     {
-                        let district = District::new(district.to_string(), "".to_string());
+                        let entry = self.entry_datastore.get_entry(district.to_string())?;
+                        let district_design = match entry {
+                            Some(entry) => entry.iris_code_designation.unwrap_or("".to_string()),
+                            None => "".to_string(),
+                        };
+                        let district = District::new(district.to_string(), district_design);
                         districts.push(district);
                     }
 
@@ -250,6 +255,7 @@ impl EntryDomainTrait for EntryDomain {
                     found_entry.global_region,
                     found_entry.global_dept,
                     found_entry.global_national,
+                    None,
                     None,
                     Some(InformationAccess::new(
                         Some(avg_global_information_access),
