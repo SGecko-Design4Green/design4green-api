@@ -28,13 +28,10 @@ impl IndexStoragePostalTrait for MemoryIndexStoragePostal {
     ) -> StorageResult<Vec<String>> {
         let mut results = Vec::new();
 
-        println!("LENGTH {:?}", self.index.len());
-
         let index = match start_with {
             Some(value) => {
                 let start: &String = &value;
                 let end: &String = &format!("{}{}", value.to_string(), "z");
-                println!("START {:?} - END {:?}", start, end);
 
                 let bound = (Included(start), Included(end));
                 self.index.range::<String, _>(bound)

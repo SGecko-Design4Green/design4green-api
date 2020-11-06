@@ -182,7 +182,7 @@ impl EntryDomainTrait for EntryDomain {
                 .code_insee
                 .clone()
                 .unwrap();
-            println!("HERE >>> {:?}", code_insee);
+
             dept_cities.insert(
                 city.to_string(),
                 self.get_city_index(code_insee.to_string()).unwrap(),
@@ -236,7 +236,6 @@ impl EntryDomainTrait for EntryDomain {
     }
 
     fn get_city_index(&self, code_insee: String) -> EntryDomainResult<Entry> {
-        println!("get city {:?}", code_insee);
         let iris_codes = match self.idx_insee_coms.get_index(code_insee) {
             Ok(optional_code) => match optional_code {
                 Some(codes) => codes.clone(),
@@ -260,7 +259,6 @@ impl EntryDomainTrait for EntryDomain {
         }
 
         let num_of_neighbors = city_entries.len() as f64;
-        println!("{:?} neighbors", num_of_neighbors);
         let sum_of_global: f64 = city_entries.iter().map(|entry| entry.global.unwrap()).sum();
         let sum_of_global_numeric_competencies: f64 = city_entries
             .iter()

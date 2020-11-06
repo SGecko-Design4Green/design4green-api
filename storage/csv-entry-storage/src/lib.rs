@@ -136,9 +136,9 @@ impl CSVEntryStorage {
         let nationalStats = self.get_stats(self.get_csv_entries());
         let mut regionsStats: BTreeMap<String, AvgStat> = BTreeMap::new();
 
-        println!("> START REGIONS SUM");
+
         for region in self.get_regions() {
-            println!("---- {} start", region);
+
             regionsStats.insert(
                 region.to_string(),
                 self.get_stats(
@@ -152,10 +152,10 @@ impl CSVEntryStorage {
                 ),
             );
 
-            println!("---- {} done", region);
+
         }
 
-        println!("> START DEPARTMENTS SUM");
+
         let mut departmentsStats: BTreeMap<String, AvgStat> = BTreeMap::new();
         for department in self.get_departments() {
             departmentsStats.insert(

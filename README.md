@@ -2,31 +2,43 @@
 
 ![Rust](https://github.com/SGecko-Design4Green/design4green-api/workflows/Rust/badge.svg)
 
-## TODO:
+- Design4Green 2020 API
+- Support only memory mode.
 
-### Referentiel:
+## BIN:
 
-- [_] Routes:
-  - Regions [X]
-  - Departements [X]
-  - Towns (NUM + NOMs)
-- [x] National statistics (JB)
-- [x] Insert into SLED (Laurent) => Check get all
-- [_] Full text search (Laurent).
-- [x] Create Index for JSON (loading at start)
-- [x] Create Index for Code (IRIS) Insee / CP
-- [_] Geoloc neighbour (TOP 5 / KM)
-- [x] Memory index
-- [x] Github Workflow
-- [_] Cache
+- Contains the project binaries.
 
-Si Region (Hauts de France) => Resultats Regions + Resultats Départements Regions
-Si Departement (59- Nord) => Resultats Departements de la Region + Resultats Villes départements
-Si Ville (Code postal + Nom) => Resultats Villes autours (ou villes départements) + Resultats Quartiers
-Si Quartier (Code iris + quartiers) => Resultats quartiers.
+### REST-API:
 
-- Index :
-  - Regions -> Departement (DONE)
-  - CodePostal -> CodeInsee (DONE)
-  - NomVille -> CodeInsee (DONE)
-  - CodeInsee -> Vec<CodeIris> (DONE)
+- **Main API project** build on Actix-Web framework.
+
+### IMPORT:
+
+- Import binary to feed the indexes and the database.
+
+## DOMAIN:
+
+Contains all the domain definitions based on hexagonal architecture:
+
+- Business traits
+- Business implementation
+- Business structs
+- Storage traits
+
+## STATIC:
+
+- Folder which is statically served by the API.
+- The FRONT application build will be copied her.
+
+## STORAGE:
+
+Contains the storage implementation :
+
+- **csv-entry-storage**: input csv module
+- **memory-index-storage**:
+- **sled-db-entry-storage**:
+
+## SHARED:
+
+Contains the shared library (like database connectors, etc...)
