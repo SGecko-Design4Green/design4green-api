@@ -63,10 +63,17 @@ impl EntryDomainTrait for EntryDomain {
             .unwrap();
 
         for city in cities.iter() {
+            //get the insee_code
+            let iris = self.idx_cities.get_index(city.to_string())?;
+            self.idx_insee_coms.get_index(city.to_string())?;
+
             results.insert(
                 city.to_string(),
                 CityDetail {
-                    code_insee: None,
+                    code_insee: match iris {
+                        Some(iris) => Some(iris.code.unwrap()),
+                        None => None,
+                    },
                     districts: None,
                 },
             );
