@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Entry {
     pub global: Option<f64>,
@@ -193,4 +195,29 @@ impl Iris {
     pub fn new(code: Option<String>, geo_loc: Option<GeoLoc>) -> Iris {
         Iris { code, geo_loc }
     }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct SearchResult {
+    pub cities: HashMap<String, CityDetail>,
+}
+
+impl SearchResult {
+    pub fn new() -> Self {
+        SearchResult {
+            cities: HashMap::new(),
+        }
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct CityDetail {
+    pub code_insee: Option<String>,
+    pub districts: Option<Vec<District>>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct District {
+    pub code_iris: String,
+    pub designation: String,
 }

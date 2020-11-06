@@ -7,7 +7,11 @@ pub trait EntryDomainTrait: Sync + Send {
     fn get_regions(&self) -> EntryDomainResult<Vec<String>>;
     fn get_departments(&self) -> EntryDomainResult<Vec<String>>;
     fn get_cities(&self) -> EntryDomainResult<Vec<String>>;
-    fn search_cities(&self, department: String, query: String) -> EntryDomainResult<Vec<String>>;
+    fn search_cities(
+        &self,
+        department: String,
+        query: String,
+    ) -> EntryDomainResult<HashMap<String, CityDetail>>;
     fn get_national_index(&self) -> EntryDomainResult<Entry>;
     fn get_regional_index(&self, region: String) -> EntryDomainResult<Entry>;
     fn get_in_regional_index(&self, region: String) -> EntryDomainResult<HashMap<String, Entry>>;

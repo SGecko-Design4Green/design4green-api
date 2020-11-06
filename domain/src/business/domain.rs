@@ -1,9 +1,6 @@
 use crate::business::error::*;
 use crate::business::traits::EntryDomainTrait;
-use crate::core::entry::{
-    AdministrativeCompetencies, Entry, InformationAccess, NumericCompetencies,
-    NumericInterfacesAccess,
-};
+use crate::core::entry::*;
 use crate::storage::traits::{EntryStorageTrait, IndexStoragePostalTrait, IndexStorageTrait};
 use std::boxed::Box;
 use std::collections::HashMap;
@@ -54,12 +51,27 @@ impl EntryDomainTrait for EntryDomain {
         Ok(self.idx_cities.get_all_keys().unwrap())
     }
 
-    fn search_cities(&self, department: String, query: String) -> EntryDomainResult<Vec<String>> {
-        //  BY REGION AND QUERY
-        Ok(self
+    fn search_cities(
+        &self,
+        department: String,
+        query: String,
+    ) -> EntryDomainResult<HashMap<String, CityDetail>> {
+        let mut results: HashMap<String, CityDetail> = HashMap::new();
+        let cities = self
             .idx_cities
             .search_on_key(query, Some(department))
-            .unwrap())
+            .unwrap();
+
+        for city in cities.iter() {
+            results.insert(
+                city.to_string(),
+                CityDetail {
+                    code_insee: None,
+                    districts: None,
+                },
+            );
+        }
+        Ok(results)
     }
 
     fn get_national_index(&self) -> EntryDomainResult<Entry> {
