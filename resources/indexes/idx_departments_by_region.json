@@ -1,44 +1,44 @@
 {
-  "AUVERGNE - RHONE - ALPES": [
+  "AUVERGNE-RHONE-ALPES": [
     "03 - ALLIER",
     "42 - LOIRE",
     "69 - RHONE",
     "01 - AIN",
-    "74 - HAUTE SAVOIE",
-    "63 - PUY DE DOME",
+    "74 - HAUTE-SAVOIE",
+    "63 - PUY-DE-DOME",
     "15 - CANTAL",
-    "43 - HAUTE LOIRE",
+    "43 - HAUTE-LOIRE",
     "07 - ARDECHE",
     "26 - DROME",
     "38 - ISERE",
     "73 - SAVOIE"
   ],
-  "BOURGOGNE - FRANCHE COMTE": [
+  "BOURGOGNE-FRANCHE-COMTE": [
     "89 - YONNE",
-    "21 - COTE D'OR",
-    "70 - HAUTE SAONE",
-    "90 - TERRITOIRE DE BELFORT",
+    "21 - COTE-D'OR",
+    "70 - HAUTE-SAONE",
+    "90 - TERRITOIRE-DE-BELFORT",
     "58 - NIEVRE",
-    "71 - SAONE ET LOIRE",
+    "71 - SAONE-ET-LOIRE",
     "39 - JURA",
     "25 - DOUBS"
   ],
   "BRETAGNE": [
     "29 - FINISTERE",
-    "22 - COTES D ARMOR",
+    "22 - COTES-D'ARMOR",
     "56 - MORBIHAN",
-    "35 - ILLE ET VILAINE"
+    "35 - ILLE-ET-VILAINE"
   ],
-  "CENTRE - VAL DE LOIRE": [
-    "28 - EURE ET LOIR",
+  "CENTRE-VAL DE LOIRE": [
+    "28 - EURE-ET-LOIR",
     "45 - LOIRET",
-    "41 - LOIR ET CHER",
-    "37 - INDRE ET LOIRE",
+    "41 - LOIR-ET-CHER",
+    "37 - INDRE-ET-LOIRE",
     "36 - INDRE",
     "18 - CHER"
   ],
   "CORSE": [
-    "2A - CORSE DU SUD",
+    "2A - CORSE-DU-SUD",
     "2B - HAUTE-CORSE"
   ],
   "GRAND EST": [
@@ -47,7 +47,7 @@
     "10 - AUBE",
     "55 - MEUSE",
     "52 - HAUTE-MARNE",
-    "54 - MEURTHE ET MOSELLE",
+    "54 - MEURTHE-ET-MOSELLE",
     "88 - VOSGES",
     "57 - MOSELLE",
     "67 - BAS-RHIN",
@@ -60,15 +60,15 @@
     "62 - PAS-DE-CALAIS",
     "59 - NORD"
   ],
-  "ILE DE FRANCE": [
-    "95 - VAL D'OISE",
+  "ILE-DE-FRANCE": [
+    "95 - VAL-D'OISE",
     "78 - YVELINES",
     "91 - ESSONNE",
     "75 - PARIS",
-    "77 - SEINE ET MARNE",
-    "93 - SEINE SAINT DENIS",
-    "94 - VAL DE MARNE",
-    "92 - HAUTS DE SEINE"
+    "77 - SEINE-ET-MARNE",
+    "93 - SEINE-SAINT-DENIS",
+    "94 - VAL-DE-MARNE",
+    "92 - HAUTS-DE-SEINE"
   ],
   "LA REUNION": [
     "974 - LA REUNION"
@@ -83,7 +83,7 @@
     "14 - CALVADOS",
     "76 - SEINE-MARITIME"
   ],
-  "NOUVELLE AQUITAINE": [
+  "NOUVELLE-AQUITAINE": [
     "16 - CHARENTE",
     "17 - CHARENTE-MARITIME",
     "19 - CORREZE",
@@ -91,7 +91,7 @@
     "24 - DORDOGNE",
     "33 - GIRONDE",
     "40 - LANDES",
-    "47 - LOT ET GARONNE",
+    "47 - LOT-ET-GARONNE",
     "64 - PYRENEES-ATLANTIQUES",
     "79 - DEUX-SEVRES",
     "86 - VIENNE",
@@ -103,10 +103,10 @@
     "12 - AVEYRON",
     "46 - LOT",
     "81 - TARN",
-    "82 - TARN ET GARONNE",
+    "82 - TARN-ET-GARONNE",
     "34 - HERAULT",
     "11 - AUDE",
-    "66 - PYRENEES ORIENTALES",
+    "66 - PYRENEES-ORIENTALES",
     "09 - ARIEGE",
     "31 - HAUTE-GARONNE",
     "32 - GERS",
@@ -116,15 +116,15 @@
     "44 - LOIRE-ATLANTIQUE",
     "53 - MAYENNE",
     "72 - SARTHE",
-    "49 - MAINE ET LOIRE",
+    "49 - MAINE-ET-LOIRE",
     "85 - VENDEE"
   ],
-  "PROVENCE - ALPES - COTE D'AZUR": [
+  "PROVENCE-ALPES-COTE D'AZUR": [
     "05 - HAUTES-ALPES",
-    "04 - ALPES DE HAUTE PROVENCE",
+    "04 - ALPES-DE-HAUTE-PROVENCE",
     "06 - ALPES-MARITIMES",
     "84 - VAUCLUSE",
-    "13 - BOUCHES DU RHONE",
+    "13 - BOUCHES-DU-RHONE",
     "83 - VAR"
   ]
 }

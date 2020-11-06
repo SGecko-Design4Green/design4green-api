@@ -70,6 +70,22 @@ pub fn get_regional_index(
     }
 }
 
+pub fn get_in_regional_index(
+    wrap_state: Data<Arc<Mutex<AppState>>>,
+    req: HttpRequest,
+) -> HttpResponse {
+    let state = wrap_state.lock().unwrap();
+    let domain = state.get_domain();
+
+    match req.match_info().get("region") {
+        Some(region) => match domain.get_in_regional_index(region.to_string()) {
+            Ok(entry) => HttpResponse::Ok().json(entry),
+            Err(_) => HttpResponse::InternalServerError().body("Error with backend."),
+        },
+        None => HttpResponse::BadRequest().body("No region was given."),
+    }
+}
+
 pub fn get_departmental_index(
     wrap_state: Data<Arc<Mutex<AppState>>>,
     req: HttpRequest,
@@ -117,3 +133,14 @@ pub fn get_city_index(
     }
 }
 
+pub fn get_all_regional_index(wrap_state: Data<Arc<Mutex<AppState>>>,
+                              req: HttpRequest,
+) -> HttpResponse {
+    let state = wrap_state.lock().unwrap();
+    let domain = state.get_domain();
+
+    match domain.get_all_regions_index() {
+        Ok(entry) => HttpResponse::Ok().json(entry),
+        Err(_) => HttpResponse::InternalServerError().body("Error with backend."),
+    }
+}

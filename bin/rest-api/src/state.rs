@@ -36,6 +36,7 @@ impl AppState {
                     )
                     .unwrap(),
                 ),
+                Box::new(MemoryIndexStorage::new(Configuration::get_index_path() + "idx_departments_by_region.json").unwrap()),
                 Box::new(SledEntriesStorage::new(Configuration::get_sled_db_path())),
             )),
         }
