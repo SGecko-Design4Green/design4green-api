@@ -51,6 +51,30 @@ pub fn get_cities(wrap_state: Data<Arc<Mutex<AppState>>>, _req: HttpRequest) -> 
     }
 }
 
+pub fn search_cities(wrap_state: Data<Arc<Mutex<AppState>>>, req: HttpRequest) -> HttpResponse {
+    let state = wrap_state.lock().unwrap();
+    let domain = state.get_domain();
+
+    let dep = match req.match_info().get("department") {
+        Some(dep) => dep,
+        None => {
+            return HttpResponse::BadRequest().body("Cannot search without 'department' parameter")
+        }
+    };
+
+    let query = match req.match_info().get("q") {
+        Some(query) => query,
+        None => {
+            return HttpResponse::BadRequest().body("Cannot search without query 'q' parameter")
+        }
+    };
+
+    match domain.search_cities(dep.to_string(), query.to_string()) {
+        Ok(entries) => HttpResponse::Ok().json(entries),
+        Err(_) => HttpResponse::InternalServerError().body("Error with backend."),
+    }
+}
+
 pub fn get_national_index(
     wrap_state: Data<Arc<Mutex<AppState>>>,
     _req: HttpRequest,

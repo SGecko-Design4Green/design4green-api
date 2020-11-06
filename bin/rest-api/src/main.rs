@@ -50,6 +50,7 @@ async fn main() -> io::Result<()> {
                     .route("/regions", web::get().to(get_regions))
                     .route("/departments", web::get().to(get_departments))
                     .route("/cities", web::get().to(get_cities))
+                    .route("/cities/search", web::get().to(search_cities))
                     .route("/index/national", web::get().to(get_national_index))
                     .route(
                         "/index/regional/{region}",
