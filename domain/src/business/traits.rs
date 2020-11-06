@@ -1,5 +1,6 @@
 use crate::business::error::EntryDomainResult;
 use crate::core::entry::*;
+use std::collections::BTreeMap;
 use std::collections::HashMap;
 
 pub trait EntryDomainTrait: Sync + Send {
@@ -11,7 +12,7 @@ pub trait EntryDomainTrait: Sync + Send {
         &self,
         department: String,
         query: String,
-    ) -> EntryDomainResult<HashMap<String, CityDetail>>;
+    ) -> EntryDomainResult<BTreeMap<String, CityDetail>>;
     fn get_national_index(&self) -> EntryDomainResult<Entry>;
     fn get_regional_index(&self, region: String) -> EntryDomainResult<Entry>;
     fn get_in_regional_index(&self, region: String) -> EntryDomainResult<HashMap<String, Entry>>;

@@ -3,6 +3,7 @@ use crate::business::traits::EntryDomainTrait;
 use crate::core::entry::*;
 use crate::storage::traits::{EntryStorageTrait, IndexStoragePostalTrait, IndexStorageTrait};
 use std::boxed::Box;
+use std::collections::BTreeMap;
 use std::collections::HashMap;
 
 pub struct EntryDomain {
@@ -55,9 +56,9 @@ impl EntryDomainTrait for EntryDomain {
         &self,
         department: String,
         query: String,
-    ) -> EntryDomainResult<HashMap<String, CityDetail>> {
-        let mut results: HashMap<String, CityDetail> = HashMap::new();
-        let cities = self
+    ) -> EntryDomainResult<BTreeMap<String, CityDetail>> {
+        let mut results: BTreeMap<String, CityDetail> = BTreeMap::new();
+        let mut cities = self
             .idx_cities
             .search_on_key(query, Some(department))
             .unwrap();
@@ -65,16 +66,31 @@ impl EntryDomainTrait for EntryDomain {
         for city in cities.iter() {
             //get the insee_code
             let iris = self.idx_cities.get_index(city.to_string())?;
-            self.idx_insee_coms.get_index(city.to_string())?;
+            let mut districts: Vec<District> = Vec::new();
 
+            let iris_code = match iris {
+                Some(iris) => {
+                    let iris_code = iris.code.unwrap_or("".to_string());
+                    for district in self
+                        .idx_insee_coms
+                        .get_index(iris_code.to_string())?
+                        .unwrap_or(Vec::new())
+                    {
+                        let district = District::new(district.to_string(), "".to_string());
+                        districts.push(district);
+                    }
+
+                    iris_code
+                }
+                None => "".to_string(),
+            };
+
+            //get the districts
             results.insert(
                 city.to_string(),
                 CityDetail {
-                    code_insee: match iris {
-                        Some(iris) => Some(iris.code.unwrap()),
-                        None => None,
-                    },
-                    districts: None,
+                    code_insee: Some(iris_code),
+                    districts: Some(districts),
                 },
             );
         }

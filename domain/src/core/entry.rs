@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Entry {
@@ -199,13 +199,13 @@ impl Iris {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct SearchResult {
-    pub cities: HashMap<String, CityDetail>,
+    pub cities: BTreeMap<String, CityDetail>,
 }
 
 impl SearchResult {
     pub fn new() -> Self {
         SearchResult {
-            cities: HashMap::new(),
+            cities: BTreeMap::new(),
         }
     }
 }
@@ -220,4 +220,13 @@ pub struct CityDetail {
 pub struct District {
     pub code_iris: String,
     pub designation: String,
+}
+
+impl District {
+    pub fn new(code_iris: String, designation: String) -> Self {
+        District {
+            code_iris,
+            designation,
+        }
+    }
 }
