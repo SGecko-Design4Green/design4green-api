@@ -46,6 +46,11 @@ async fn main() -> io::Result<()> {
             )
             .wrap(middleware::Logger::default())
             .wrap(middleware::Compress::default())
+            //STATIC CONF
+            .wrap(
+                middleware::DefaultHeaders::new()
+                    .header("Cache-Control", "public, max-age=604800, immutable"),
+            )
             .data(app_state.clone())
             .service(
                 web::scope("/api")
@@ -68,19 +73,20 @@ async fn main() -> io::Result<()> {
                         "/index/departmental/{dept}",
                         web::get().to(get_departmental_index),
                     )
-                    .route("/index/departmental/{dept}/in", web::get().to(get_in_departmental_index))
+                    .route(
+                        "/index/departmental/{dept}/in",
+                        web::get().to(get_in_departmental_index),
+                    )
                     .route("/index/city/{code_insee}", web::get().to(get_city_index))
-                    .route("/index/city/{code_insee}/districts", web::get().to(get_city_districts_index))
+                    .route(
+                        "/index/city/{code_insee}/districts",
+                        web::get().to(get_city_districts_index),
+                    )
                     .route(
                         "/index/districts/{iriscode}",
                         web::get().to(get_district_index),
                     )
                     .route("/index", web::get().to(entries_get_all)),
-            )
-            //STATIC CONF
-            .wrap(
-                middleware::DefaultHeaders::new()
-                    .header("Cache-Control", "public, max-age=604800, immutable"),
             )
             .service(web::scope("/").configure(get_static_files_configuration))
     })

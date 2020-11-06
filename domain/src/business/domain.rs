@@ -3,7 +3,7 @@ use crate::business::traits::EntryDomainTrait;
 use crate::core::entry::*;
 use crate::storage::traits::{EntryStorageTrait, IndexStoragePostalTrait, IndexStorageTrait};
 use std::boxed::Box;
-use std::collections::{HashMap, BTreeMap};
+use std::collections::{BTreeMap, HashMap};
 
 pub struct EntryDomain {
     pub idx_regions: Box<dyn IndexStorageTrait>,
@@ -159,11 +159,15 @@ impl EntryDomainTrait for EntryDomain {
         Ok(res)
     }
 
-    fn get_in_departmental_index(&self, department: String, page: i32) -> EntryDomainResult<BTreeMap<String, Entry>> {
+    fn get_in_departmental_index(
+        &self,
+        department: String,
+        page: i32,
+    ) -> EntryDomainResult<BTreeMap<String, Entry>> {
         let cities_result = self.search_cities(department, "".to_string());
         let cities = match cities_result {
             Ok(cities) => cities,
-            Err(_) => BTreeMap::new()
+            Err(_) => BTreeMap::new(),
         };
 
         let cities_keys: Vec<String> = cities.keys().cloned().collect();
@@ -172,8 +176,17 @@ impl EntryDomainTrait for EntryDomain {
         let chunk_keys = &cities_keys[start..end];
         let mut deptCities: BTreeMap<String, Entry> = BTreeMap::new();
         for city in chunk_keys {
-            let code_insee = &cities.get(&city.to_string()).unwrap().code_insee.clone().unwrap();
-            deptCities.insert(city.to_string(), self.get_city_index(code_insee.to_string()).unwrap());
+            let code_insee = &cities
+                .get(&city.to_string())
+                .unwrap()
+                .code_insee
+                .clone()
+                .unwrap();
+            println!("HERE >>> {:?}", code_insee);
+            deptCities.insert(
+                city.to_string(),
+                self.get_city_index(code_insee.to_string()).unwrap(),
+            );
         }
 
         Ok(deptCities)
@@ -195,7 +208,10 @@ impl EntryDomainTrait for EntryDomain {
         }
     }
 
-    fn get_city_districts_index(&self, code_insee: String) -> EntryDomainResult<HashMap<String, Entry>> {
+    fn get_city_districts_index(
+        &self,
+        code_insee: String,
+    ) -> EntryDomainResult<HashMap<String, Entry>> {
         let iris_codes_res = match self.idx_insee_coms.get_index(code_insee) {
             Ok(optional_code) => match optional_code {
                 Some(codes) => codes.clone(),
@@ -207,8 +223,14 @@ impl EntryDomainTrait for EntryDomain {
         let mut districts: HashMap<String, Entry> = HashMap::new();
 
         for iris_code in iris_codes_res {
-            districts.insert(iris_code.to_string(), self.entry_datastore.get_entry(iris_code.to_string()).unwrap().unwrap());
-        };
+            districts.insert(
+                iris_code.to_string(),
+                self.entry_datastore
+                    .get_entry(iris_code.to_string())
+                    .unwrap()
+                    .unwrap(),
+            );
+        }
 
         Ok(districts)
     }
