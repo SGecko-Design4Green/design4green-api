@@ -1,5 +1,7 @@
+#[macro_use]
+extern crate serde_derive;
 use crate::state::AppState;
-use actix_web::web::Data;
+use actix_web::web::{Data, Query};
 use actix_web::{web, HttpRequest, HttpResponse};
 use std::sync::{Arc, Mutex};
 use urlencoding::decode;
@@ -16,6 +18,11 @@ pub fn healthcheck(_req: HttpRequest) -> HttpResponse {
 
 pub fn unimplemented(_req: HttpRequest) -> HttpResponse {
     HttpResponse::NotFound().body("unimplemented !")
+}
+
+#[derive(Deserialize)]
+pub struct PageParam {
+    page: i32
 }
 
 pub fn entries_get_all(wrap_state: Data<Arc<Mutex<AppState>>>, _req: HttpRequest) -> HttpResponse {
@@ -177,7 +184,7 @@ pub fn get_city_index(wrap_state: Data<Arc<Mutex<AppState>>>, req: HttpRequest) 
 
 pub fn get_all_regional_index(
     wrap_state: Data<Arc<Mutex<AppState>>>,
-    req: HttpRequest,
+    _req: HttpRequest,
 ) -> HttpResponse {
     let state = wrap_state.lock().unwrap();
     let domain = state.get_domain();
@@ -185,5 +192,22 @@ pub fn get_all_regional_index(
     match domain.get_all_regions_index() {
         Ok(entry) => HttpResponse::Ok().json(entry),
         Err(_) => HttpResponse::InternalServerError().body("Error with backend."),
+    }
+}
+
+pub fn get_in_departmental_index(
+    wrap_state: Data<Arc<Mutex<AppState>>>,
+    req: HttpRequest,
+    query: web::Query<PageParam>
+) -> HttpResponse {
+    let state = wrap_state.lock().unwrap();
+    let domain = state.get_domain();
+
+    match req.match_info().get("dept") {
+        Some(dept) => match domain.get_in_departmental_index(dept.to_string(), query.page) {
+                Ok(entry) => HttpResponse::Ok().json(entry),
+                Err(_) => HttpResponse::InternalServerError().body("Error with backend."),
+        },
+        None => HttpResponse::BadRequest().body("No region was given."),
     }
 }

@@ -160,6 +160,22 @@ impl EntryDomainTrait for EntryDomain {
         Ok(res)
     }
 
+    fn get_in_departmental_index(&self, department: String, page: i32) -> EntryDomainResult<HashMap<String, Entry>> {
+        let cities_result = self.search_cities(department, "".to_string());
+        let cities = match cities_result {
+            Some(cities) => cities,
+            None => Vec::new()
+        };
+
+        let cities_chunk = cities.range((page - 1) * 5..page * 5) as HashMap<String, CityDetail>;
+        let mut deptCities: HashMap<String, Entry> = HashMap::new();
+        for city in cities_chunk.iter() {
+            deptCities.insert(city.0.to_string(), self.get_city_index(city.1.code_insee.unwrap()).unwrap());
+        };
+
+        Ok(deptCities)
+    }
+
     fn get_departmental_index(&self, department: String) -> EntryDomainResult<Entry> {
         let iris_code = match self.idx_departments.get_index(department).unwrap() {
             Some(codes) => Ok(codes.first().unwrap().clone()),
