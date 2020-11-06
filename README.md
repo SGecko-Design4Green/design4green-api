@@ -36,9 +36,15 @@ Contains all the domain definitions based on hexagonal architecture:
 Contains the storage implementation :
 
 - **csv-entry-storage**: input csv module
-- **memory-index-storage**:
-- **sled-db-entry-storage**:
+- **memory-index-storage**: index in memory story
+- **sled-db-entry-storage**: db modules
 
-## SHARED:
+## DATABASE:
 
-Contains the shared library (like database connectors, etc...)
+Contains database data.
+
+## RESSOURCES:
+
+### INDEXES:
+
+- Contains the indexes to load in memory
